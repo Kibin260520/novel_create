@@ -35,7 +35,7 @@ npm run dev        # http://localhost:5173
 ```bash
 npm run typecheck  # 类型检查
 npm run build      # 构建到 dist/
-npm run preview    # 本地预览构建产物 → http://localhost:4173/novel_collection/
+npm run preview    # 本地预览构建产物 → http://localhost:4173/novel_create/
 ```
 
 ## 数据结构
@@ -93,11 +93,11 @@ public/data/
 const SITE_BASE = '/你的仓库名/'
 ```
 
-例如仓库叫 `novel_collection`，就保持 `/novel_collection/`。
+例如仓库叫 `novel_create`，就保持 `/novel_create/`。
 
 > 开发服务器仍跑在根路径 `http://localhost:5173/`；
 > 构建与预览（`npm run build` / `npm run preview`）会自动切到子路径，
-> 预览地址为 `http://localhost:4173/novel_collection/`。
+> 预览地址为 `http://localhost:4173/novel_create/`。
 
 ### 2. 推送代码
 

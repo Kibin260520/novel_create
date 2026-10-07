@@ -83,7 +83,7 @@ export function SettingsPage() {
                 <input
                   className="input"
                   value={settings.repo}
-                  placeholder="例如：novel_collection"
+                  placeholder="例如：novel_create"
                   spellCheck={false}
                   onChange={(e) => update({ repo: e.target.value })}
                 />
