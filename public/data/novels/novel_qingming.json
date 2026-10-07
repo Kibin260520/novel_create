@@ -1,0 +1,446 @@
+{
+  "id": "novel_qingming",
+  "schemaVersion": 1,
+  "title": "青冥剑歌",
+  "author": "薛仙",
+  "cover": "",
+  "tags": ["东方玄幻", "剑修", "长篇"],
+  "summary": "少年林砚自青冥山下走出，以一剑叩问天道，在宗门倾轧与魔道复苏之间，寻找剑道尽头的那缕光。",
+  "createdAt": "2026-08-01T02:00:00.000Z",
+  "updatedAt": "2026-10-07T09:30:00.000Z",
+  "modules": [
+    {
+      "id": "mod_qm_setting",
+      "name": "设定",
+      "description": "世界规则、力量体系、背景设定",
+      "entryLabel": "设定",
+      "icon": { "type": "builtin", "name": "book" },
+      "color": "#6366f1",
+      "order": 0,
+      "fields": [
+        { "key": "name", "label": "名称", "type": "text", "required": true, "order": 0 },
+        { "key": "category", "label": "类别", "type": "select", "options": ["世界观", "力量体系", "规则", "背景", "其他"], "order": 1 },
+        { "key": "detail", "label": "详情", "type": "textarea", "order": 2 }
+      ],
+      "entries": [
+        {
+          "id": "ent_qm_set_1",
+          "createdAt": "2026-08-02T03:10:00.000Z",
+          "updatedAt": "2026-09-18T05:20:00.000Z",
+          "order": 0,
+          "tags": ["核心", "力量体系"],
+          "notes": "全书的战力天花板要克制，避免后期崩坏。",
+          "values": {
+            "name": "灵气修炼体系",
+            "category": "力量体系",
+            "detail": "天地间游离灵气，修士以吐纳炼化，循九境而上：炼气、筑基、金丹、元婴、化神、炼虚、合体、大乘、渡劫。每一境分初、中、后、圆满四阶。"
+          }
+        },
+        {
+          "id": "ent_qm_set_2",
+          "createdAt": "2026-08-02T03:30:00.000Z",
+          "updatedAt": "2026-08-02T03:30:00.000Z",
+          "order": 1,
+          "tags": ["世界观"],
+          "values": {
+            "name": "天道法则",
+            "category": "世界观",
+            "detail": "天道并非意志，而是一套自我修正的因果律。修士逆天而行，每一次突破都会引来「天劫」的清算，越是接近大道，反噬越重。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "mod_qm_faction",
+      "name": "势力",
+      "description": "门派、组织、国家、阵营",
+      "entryLabel": "势力",
+      "icon": { "type": "builtin", "name": "shield" },
+      "color": "#e5484d",
+      "order": 1,
+      "fields": [
+        { "key": "name", "label": "名称", "type": "text", "required": true, "order": 0 },
+        { "key": "type", "label": "类型", "type": "select", "options": ["宗门", "家族", "王朝", "组织", "异族", "其他"], "order": 1 },
+        { "key": "leader", "label": "首领", "type": "text", "order": 2 },
+        { "key": "stance", "label": "立场", "type": "text", "order": 3 },
+        { "key": "intro", "label": "简介", "type": "textarea", "order": 4 }
+      ],
+      "entries": [
+        {
+          "id": "ent_qm_fac_1",
+          "createdAt": "2026-08-03T06:00:00.000Z",
+          "updatedAt": "2026-09-20T08:00:00.000Z",
+          "order": 0,
+          "tags": ["正道", "主角阵营"],
+          "values": {
+            "name": "青云宗",
+            "type": "宗门",
+            "leader": "掌门 · 玄机子",
+            "stance": "正道魁首",
+            "intro": "青冥山三大宗门之首，以剑道立宗。门规森严，内门弟子皆为剑修。表面清正，实则派系林立。"
+          }
+        },
+        {
+          "id": "ent_qm_fac_2",
+          "createdAt": "2026-08-03T06:20:00.000Z",
+          "updatedAt": "2026-08-03T06:20:00.000Z",
+          "order": 1,
+          "tags": ["反派"],
+          "values": {
+            "name": "血月魔教",
+            "type": "组织",
+            "leader": "教主 · 血无涯",
+            "stance": "魔道",
+            "intro": "以血祭铸道的邪派，教众以活人炼血丹，被正道追剿千年，近年却暗中复苏。"
+          }
+        },
+        {
+          "id": "ent_qm_fac_3",
+          "createdAt": "2026-08-05T07:00:00.000Z",
+          "updatedAt": "2026-08-05T07:00:00.000Z",
+          "order": 2,
+          "tags": ["中立"],
+          "values": {
+            "name": "天机阁",
+            "type": "组织",
+            "leader": "阁主 · 白无忧",
+            "stance": "中立",
+            "intro": "贩卖情报与推演天机的神秘组织，不参与纷争，谁的灵石给够就为谁卜一卦。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "mod_qm_idea",
+      "name": "灵感",
+      "description": "零散的点子、桥段、画面",
+      "entryLabel": "灵感",
+      "icon": { "type": "builtin", "name": "sparkles" },
+      "color": "#f5a524",
+      "order": 2,
+      "fields": [
+        { "key": "idea", "label": "灵感内容", "type": "textarea", "required": true, "order": 0 },
+        { "key": "source", "label": "来源", "type": "text", "order": 1 },
+        { "key": "tags", "label": "关键词", "type": "tags", "order": 2 }
+      ],
+      "entries": [
+        {
+          "id": "ent_qm_idea_1",
+          "createdAt": "2026-08-10T12:00:00.000Z",
+          "updatedAt": "2026-08-10T12:00:00.000Z",
+          "order": 0,
+          "tags": ["画面"],
+          "values": {
+            "idea": "主角第一次拔剑，剑身上倒映出满天星河，可下一刻星子尽数熄灭——暗示他的剑道会吞噬光。",
+            "source": "夜跑时抬头看星星",
+            "tags": ["剑道", "意象", "伏笔"]
+          }
+        },
+        {
+          "id": "ent_qm_idea_2",
+          "createdAt": "2026-08-22T15:30:00.000Z",
+          "updatedAt": "2026-08-22T15:30:00.000Z",
+          "order": 1,
+          "tags": ["桥段"],
+          "values": {
+            "idea": "让反派和主角在同一个雨天遇见同一位卖伞的老人，两人各买一把，多年后重逢时伞还留着。",
+            "source": "读诗词",
+            "tags": ["宿命感", "对照"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "mod_qm_skill",
+      "name": "技能名",
+      "description": "功法、招式、术法名称",
+      "entryLabel": "技能",
+      "icon": { "type": "builtin", "name": "sword" },
+      "color": "#10a37f",
+      "order": 3,
+      "fields": [
+        { "key": "name", "label": "名称", "type": "text", "required": true, "order": 0 },
+        { "key": "category", "label": "类别", "type": "select", "options": ["攻击", "防御", "身法", "辅助", "禁忌", "被动"], "order": 1 },
+        { "key": "rank", "label": "品阶", "type": "select", "options": ["凡阶", "灵阶", "玄阶", "天阶", "神阶"], "order": 2 },
+        { "key": "effect", "label": "效果", "type": "textarea", "order": 3 }
+      ],
+      "entries": [
+        {
+          "id": "ent_qm_skl_1",
+          "createdAt": "2026-08-12T04:00:00.000Z",
+          "updatedAt": "2026-09-01T04:00:00.000Z",
+          "order": 0,
+          "tags": ["主角"],
+          "values": { "name": "寒江独钓", "category": "攻击", "rank": "玄阶", "effect": "一剑垂落如钩，看似随意的轨迹却能封死对手所有退路，讲究「以静制动」。" }
+        },
+        {
+          "id": "ent_qm_skl_2",
+          "createdAt": "2026-08-12T04:20:00.000Z",
+          "updatedAt": "2026-08-12T04:20:00.000Z",
+          "order": 1,
+          "tags": ["主角"],
+          "values": { "name": "青冥问道", "category": "攻击", "rank": "天阶", "effect": "青云宗镇宗剑诀，以身为剑、以念为锋，剑出无悔。修至大成可斩断因果。" }
+        },
+        {
+          "id": "ent_qm_skl_3",
+          "createdAt": "2026-08-14T09:00:00.000Z",
+          "updatedAt": "2026-08-14T09:00:00.000Z",
+          "order": 2,
+          "tags": ["反派"],
+          "values": { "name": "血海浮屠", "category": "禁忌", "rank": "神阶", "effect": "以万人血祭凝成血海，海面每浮起一座浮屠，施术者便多得一条命。代价是永坠魔道。" }
+        },
+        {
+          "id": "ent_qm_skl_4",
+          "createdAt": "2026-08-16T09:00:00.000Z",
+          "updatedAt": "2026-08-16T09:00:00.000Z",
+          "order": 3,
+          "tags": ["配角"],
+          "values": { "name": "踏雪无痕", "category": "身法", "rank": "灵阶", "effect": "足不沾尘，雪上无痕。短距离内可连踏七步，每步换一次方位。" }
+        }
+      ]
+    },
+    {
+      "id": "mod_qm_char",
+      "name": "角色",
+      "description": "主角、配角、反派",
+      "entryLabel": "角色",
+      "icon": { "type": "builtin", "name": "user" },
+      "color": "#8b5cf6",
+      "order": 4,
+      "fields": [
+        { "key": "name", "label": "姓名", "type": "text", "required": true, "order": 0 },
+        { "key": "alias", "label": "别称", "type": "text", "order": 1 },
+        { "key": "gender", "label": "性别", "type": "select", "options": ["男", "女", "其他"], "order": 2 },
+        { "key": "faction", "label": "所属势力", "type": "text", "order": 3 },
+        { "key": "rank", "label": "境界 / 等级", "type": "text", "order": 4 },
+        { "key": "intro", "label": "简介", "type": "textarea", "order": 5 }
+      ],
+      "entries": [
+        {
+          "id": "ent_qm_chr_1",
+          "createdAt": "2026-08-06T02:00:00.000Z",
+          "updatedAt": "2026-09-28T02:00:00.000Z",
+          "order": 0,
+          "tags": ["主角", "核心"],
+          "notes": "名字寓意：林深见鹿，砚墨成章。",
+          "values": {
+            "name": "林砚",
+            "alias": "青衫客",
+            "gender": "男",
+            "faction": "青云宗（外门 → 内门）",
+            "rank": "金丹初期",
+            "intro": "出身寒门的少年，父母死于血月魔教之手。性格外冷内热，剑道天赋极高却因身世被同门排挤。信条：剑不救人，便无意义。"
+          }
+        },
+        {
+          "id": "ent_qm_chr_2",
+          "createdAt": "2026-08-06T02:20:00.000Z",
+          "updatedAt": "2026-08-06T02:20:00.000Z",
+          "order": 1,
+          "tags": ["女主"],
+          "values": {
+            "name": "苏青鸢",
+            "alias": "鸢姑娘",
+            "gender": "女",
+            "faction": "青云宗 · 药堂",
+            "rank": "筑基圆满",
+            "intro": "掌门玄机子的关门弟子，精通药理与阵法。看似温婉，实则心思缜密，是林砚在宗门里唯一的盟友。"
+          }
+        },
+        {
+          "id": "ent_qm_chr_3",
+          "createdAt": "2026-08-07T02:00:00.000Z",
+          "updatedAt": "2026-08-07T02:00:00.000Z",
+          "order": 2,
+          "tags": ["长辈"],
+          "values": {
+            "name": "玄机子",
+            "alias": "老道士",
+            "gender": "男",
+            "faction": "青云宗 · 掌门",
+            "rank": "炼虚中期",
+            "intro": "青云宗掌门，看似糊涂，实则洞悉一切。暗中在下一盘大棋，林砚是他棋局里最不确定的一子。"
+          }
+        },
+        {
+          "id": "ent_qm_chr_4",
+          "createdAt": "2026-08-08T02:00:00.000Z",
+          "updatedAt": "2026-09-30T02:00:00.000Z",
+          "order": 3,
+          "tags": ["反派", "核心"],
+          "values": {
+            "name": "血无涯",
+            "alias": "血月教主",
+            "gender": "男",
+            "faction": "血月魔教",
+            "rank": "合体初期",
+            "intro": "千年前被正道联手封印的魔道巨擘，借一具少年躯壳重返人间。视林砚为「铸剑之材」，亦敌亦师。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "mod_qm_plot",
+      "name": "情节",
+      "description": "剧情节点、转折、伏笔",
+      "entryLabel": "情节",
+      "icon": { "type": "builtin", "name": "book-open" },
+      "color": "#b06cf0",
+      "order": 5,
+      "fields": [
+        { "key": "title", "label": "标题", "type": "text", "required": true, "order": 0 },
+        { "key": "stage", "label": "阶段", "type": "select", "options": ["开端", "发展", "转折", "高潮", "结局", "伏笔"], "order": 1 },
+        { "key": "outline", "label": "概要", "type": "textarea", "order": 2 }
+      ],
+      "entries": [
+        {
+          "id": "ent_qm_plt_1",
+          "createdAt": "2026-08-15T01:00:00.000Z",
+          "updatedAt": "2026-09-05T01:00:00.000Z",
+          "order": 0,
+          "tags": ["开端"],
+          "values": { "title": "青冥山下", "stage": "开端", "outline": "林砚以杂役身份进入青云宗，因一次护剑之举被玄机子留意，破格录入外门。" }
+        },
+        {
+          "id": "ent_qm_plt_2",
+          "createdAt": "2026-08-18T01:00:00.000Z",
+          "updatedAt": "2026-08-18T01:00:00.000Z",
+          "order": 1,
+          "tags": ["转折"],
+          "values": { "title": "血月重现", "stage": "转折", "outline": "魔教残党夜袭药堂，苏青鸢受伤。林砚首次拔出父亲遗剑，剑光吞光，惊动全宗。" }
+        },
+        {
+          "id": "ent_qm_plt_3",
+          "createdAt": "2026-08-20T01:00:00.000Z",
+          "updatedAt": "2026-08-20T01:00:00.000Z",
+          "order": 2,
+          "tags": ["伏笔"],
+          "values": { "title": "卖伞的老人", "stage": "伏笔", "outline": "林砚与血无涯在同一雨夜遇见卖伞老人，各买一伞。多年后重逢，两把伞在同一屋檐下滴水。" }
+        }
+      ]
+    },
+    {
+      "id": "mod_qm_place",
+      "name": "地点",
+      "description": "地理、城市、秘境",
+      "entryLabel": "地点",
+      "icon": { "type": "builtin", "name": "map" },
+      "color": "#0ea5e9",
+      "order": 6,
+      "fields": [
+        { "key": "name", "label": "名称", "type": "text", "required": true, "order": 0 },
+        { "key": "type", "label": "类型", "type": "select", "options": ["城池", "山川", "秘境", "遗迹", "异界", "其他"], "order": 1 },
+        { "key": "owner", "label": "归属", "type": "text", "order": 2 },
+        { "key": "desc", "label": "描述", "type": "textarea", "order": 3 }
+      ],
+      "entries": [
+        {
+          "id": "ent_qm_plc_1",
+          "createdAt": "2026-08-09T05:00:00.000Z",
+          "updatedAt": "2026-08-09T05:00:00.000Z",
+          "order": 0,
+          "tags": ["主舞台"],
+          "values": { "name": "青冥山", "type": "山川", "owner": "青云宗", "desc": "终年云雾缭绕的巨岳，山巅有「问道台」，相传是上古剑仙悟道之地。" }
+        },
+        {
+          "id": "ent_qm_plc_2",
+          "createdAt": "2026-08-09T05:20:00.000Z",
+          "updatedAt": "2026-08-09T05:20:00.000Z",
+          "order": 1,
+          "tags": [],
+          "values": { "name": "忘川渡", "type": "秘境", "owner": "无主", "desc": "一条横贯幽冥的黑色长河，渡船上没有船夫。凡人饮其水忘前尘，修士饮其水忘道心。" }
+        },
+        {
+          "id": "ent_qm_plc_3",
+          "createdAt": "2026-08-11T05:00:00.000Z",
+          "updatedAt": "2026-08-11T05:00:00.000Z",
+          "order": 2,
+          "tags": [],
+          "values": { "name": "落星城", "type": "城池", "owner": "天机阁（名义）", "desc": "三国交汇处的自由城，凡人与修士混居，天机阁在此设总号，消息四通八达。" }
+        }
+      ]
+    },
+    {
+      "id": "mod_qm_item",
+      "name": "道具",
+      "description": "法宝、兵器、丹药、信物",
+      "entryLabel": "道具",
+      "icon": { "type": "builtin", "name": "package" },
+      "color": "#f97316",
+      "order": 7,
+      "fields": [
+        { "key": "name", "label": "名称", "type": "text", "required": true, "order": 0 },
+        { "key": "category", "label": "类别", "type": "select", "options": ["兵器", "法宝", "丹药", "信物", "材料", "其他"], "order": 1 },
+        { "key": "rank", "label": "品阶", "type": "select", "options": ["凡品", "灵品", "玄品", "天品", "神品"], "order": 2 },
+        { "key": "note", "label": "说明", "type": "textarea", "order": 3 }
+      ],
+      "entries": [
+        {
+          "id": "ent_qm_itm_1",
+          "createdAt": "2026-08-13T03:00:00.000Z",
+          "updatedAt": "2026-09-22T03:00:00.000Z",
+          "order": 0,
+          "tags": ["主角", "关键"],
+          "values": { "name": "断念剑", "category": "兵器", "rank": "天品", "note": "林砚之父的遗物，剑身有裂，平时只显现半截剑身。剑鸣时会吞没周围光线。" }
+        },
+        {
+          "id": "ent_qm_itm_2",
+          "createdAt": "2026-08-13T03:20:00.000Z",
+          "updatedAt": "2026-08-13T03:20:00.000Z",
+          "order": 1,
+          "tags": [],
+          "values": { "name": "回春丹", "category": "丹药", "rank": "灵品", "note": "苏青鸢亲手炼制的疗伤丹药，药香清苦。她只给过三个人，林砚是第二个。" }
+        },
+        {
+          "id": "ent_qm_itm_3",
+          "createdAt": "2026-08-17T03:00:00.000Z",
+          "updatedAt": "2026-08-17T03:00:00.000Z",
+          "order": 2,
+          "tags": ["伏笔"],
+          "values": { "name": "旧油纸伞", "category": "信物", "rank": "凡品", "note": "林砚与血无涯各持一把的同款伞，因一次雨夜结缘，成为结局的关键意象。" }
+        }
+      ]
+    },
+    {
+      "id": "mod_qm_timeline",
+      "name": "时间线",
+      "description": "大事记、历史年表",
+      "entryLabel": "事件",
+      "icon": { "type": "builtin", "name": "clock" },
+      "color": "#64748b",
+      "order": 8,
+      "fields": [
+        { "key": "event", "label": "事件", "type": "text", "required": true, "order": 0 },
+        { "key": "time", "label": "时间点", "type": "text", "order": 1 },
+        { "key": "cast", "label": "关联角色", "type": "text", "order": 2 },
+        { "key": "brief", "label": "简述", "type": "textarea", "order": 3 }
+      ],
+      "entries": [
+        {
+          "id": "ent_qm_tl_1",
+          "createdAt": "2026-08-21T02:00:00.000Z",
+          "updatedAt": "2026-08-21T02:00:00.000Z",
+          "order": 0,
+          "tags": ["背景"],
+          "values": { "event": "血月之乱", "time": "青冥历 328 年", "cast": "血无涯、正道联军", "brief": "魔教屠戮三城，正道七宗联手将其封印于忘川之下，代价是七位宗主陨落其四。" }
+        },
+        {
+          "id": "ent_qm_tl_2",
+          "createdAt": "2026-08-21T02:20:00.000Z",
+          "updatedAt": "2026-08-21T02:20:00.000Z",
+          "order": 1,
+          "tags": ["背景"],
+          "values": { "event": "林砚父母之死", "time": "青冥历 341 年", "cast": "林砚", "brief": "魔教残党为夺《青冥剑诀》残卷，血洗林家村。七岁的林砚被藏于地窖，目睹全程。" }
+        },
+        {
+          "id": "ent_qm_tl_3",
+          "createdAt": "2026-08-23T02:00:00.000Z",
+          "updatedAt": "2026-08-23T02:00:00.000Z",
+          "order": 2,
+          "tags": ["主线"],
+          "values": { "event": "林砚入宗", "time": "青冥历 356 年 · 春", "cast": "林砚、玄机子", "brief": "十六岁的林砚以杂役身份踏入青云宗，故事正式展开。" }
+        }
+      ]
+    }
+  ]
+}

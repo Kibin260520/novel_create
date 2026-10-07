@@ -1,0 +1,332 @@
+{
+  "id": "novel_xinggui",
+  "schemaVersion": 1,
+  "title": "星轨挽歌",
+  "author": "薛仙",
+  "cover": "",
+  "tags": ["科幻", "星际", "中篇"],
+  "summary": "当联邦的星轨被未知引力扭曲，领航员江离必须在母星存亡与挚友性命之间做出抉择。",
+  "createdAt": "2026-09-05T02:00:00.000Z",
+  "updatedAt": "2026-10-07T08:00:00.000Z",
+  "modules": [
+    {
+      "id": "mod_xg_setting",
+      "name": "设定",
+      "description": "世界规则、力量体系、背景设定",
+      "entryLabel": "设定",
+      "icon": { "type": "builtin", "name": "book" },
+      "color": "#6366f1",
+      "order": 0,
+      "fields": [
+        { "key": "name", "label": "名称", "type": "text", "required": true, "order": 0 },
+        { "key": "category", "label": "类别", "type": "select", "options": ["世界观", "力量体系", "规则", "背景", "其他"], "order": 1 },
+        { "key": "detail", "label": "详情", "type": "textarea", "order": 2 }
+      ],
+      "entries": [
+        {
+          "id": "ent_xg_set_1",
+          "createdAt": "2026-09-06T02:00:00.000Z",
+          "updatedAt": "2026-09-25T02:00:00.000Z",
+          "order": 0,
+          "tags": ["核心"],
+          "values": { "name": "星轨网络", "category": "世界观", "detail": "人类以引力锚点串联殖民星，形成横跨七光年的「星轨」。舰船借星轨跃迁，一旦锚点失稳，整条航线便成绝路。" }
+        },
+        {
+          "id": "ent_xg_set_2",
+          "createdAt": "2026-09-06T02:20:00.000Z",
+          "updatedAt": "2026-09-06T02:20:00.000Z",
+          "order": 1,
+          "tags": ["规则"],
+          "values": { "name": "共感协议", "category": "规则", "detail": "领航员需与星舰 AI 建立神经共感，代价是 AI 会共享其痛觉。共感越深，跃迁越准，人却越难分清自我。" }
+        }
+      ]
+    },
+    {
+      "id": "mod_xg_faction",
+      "name": "势力",
+      "description": "门派、组织、国家、阵营",
+      "entryLabel": "势力",
+      "icon": { "type": "builtin", "name": "shield" },
+      "color": "#e5484d",
+      "order": 1,
+      "fields": [
+        { "key": "name", "label": "名称", "type": "text", "required": true, "order": 0 },
+        { "key": "type", "label": "类型", "type": "select", "options": ["宗门", "家族", "王朝", "组织", "异族", "其他"], "order": 1 },
+        { "key": "leader", "label": "首领", "type": "text", "order": 2 },
+        { "key": "stance", "label": "立场", "type": "text", "order": 3 },
+        { "key": "intro", "label": "简介", "type": "textarea", "order": 4 }
+      ],
+      "entries": [
+        {
+          "id": "ent_xg_fac_1",
+          "createdAt": "2026-09-07T02:00:00.000Z",
+          "updatedAt": "2026-09-07T02:00:00.000Z",
+          "order": 0,
+          "tags": ["主角阵营"],
+          "values": { "name": "星轨联邦", "type": "王朝", "leader": "执委会主席 · 陆沉", "stance": "秩序维护者", "intro": "统辖七颗殖民星的政权，掌控星轨网络的调度权。繁荣之下，资源分配早已失衡。" }
+        },
+        {
+          "id": "ent_xg_fac_2",
+          "createdAt": "2026-09-08T02:00:00.000Z",
+          "updatedAt": "2026-09-08T02:00:00.000Z",
+          "order": 1,
+          "tags": ["反派"],
+          "values": { "name": "回声会", "type": "组织", "leader": "未知", "stance": "颠覆者", "intro": "相信星轨是囚禁人类的牢笼，主张炸毁全部锚点、回归深空漂流。手段极端，成员多为被联邦遗弃的边陲星民。" }
+        }
+      ]
+    },
+    {
+      "id": "mod_xg_idea",
+      "name": "灵感",
+      "description": "零散的点子、桥段、画面",
+      "entryLabel": "灵感",
+      "icon": { "type": "builtin", "name": "sparkles" },
+      "color": "#f5a524",
+      "order": 2,
+      "fields": [
+        { "key": "idea", "label": "灵感内容", "type": "textarea", "required": true, "order": 0 },
+        { "key": "source", "label": "来源", "type": "text", "order": 1 },
+        { "key": "tags", "label": "关键词", "type": "tags", "order": 2 }
+      ],
+      "entries": [
+        {
+          "id": "ent_xg_idea_1",
+          "createdAt": "2026-09-12T02:00:00.000Z",
+          "updatedAt": "2026-09-12T02:00:00.000Z",
+          "order": 0,
+          "tags": ["意象"],
+          "values": { "idea": "AI 在共感中替领航员「记住」了疼痛，于是当 AI 被格式化时，主角第一次真正感到了疼。", "source": "深夜写代码", "tags": ["共感", "牺牲", "结尾"] }
+        }
+      ]
+    },
+    {
+      "id": "mod_xg_skill",
+      "name": "技能名",
+      "description": "功法、招式、术法名称",
+      "entryLabel": "技能",
+      "icon": { "type": "builtin", "name": "sword" },
+      "color": "#10a37f",
+      "order": 3,
+      "fields": [
+        { "key": "name", "label": "名称", "type": "text", "required": true, "order": 0 },
+        { "key": "category", "label": "类别", "type": "select", "options": ["攻击", "防御", "身法", "辅助", "禁忌", "被动"], "order": 1 },
+        { "key": "rank", "label": "品阶", "type": "select", "options": ["凡阶", "灵阶", "玄阶", "天阶", "神阶"], "order": 2 },
+        { "key": "effect", "label": "效果", "type": "textarea", "order": 3 }
+      ],
+      "entries": [
+        {
+          "id": "ent_xg_skl_1",
+          "createdAt": "2026-09-10T02:00:00.000Z",
+          "updatedAt": "2026-09-10T02:00:00.000Z",
+          "order": 0,
+          "tags": ["技术"],
+          "values": { "name": "定点跃迁", "category": "身法", "rank": "玄阶", "effect": "在星轨锚点间做极短距瞬时位移，耗能巨大，连续使用会灼伤神经共感接口。" }
+        },
+        {
+          "id": "ent_xg_skl_2",
+          "createdAt": "2026-09-11T02:00:00.000Z",
+          "updatedAt": "2026-09-11T02:00:00.000Z",
+          "order": 1,
+          "tags": ["禁忌"],
+          "values": { "name": "深潜共感", "category": "禁忌", "rank": "神阶", "effect": "领航员与 AI 完全融合，短时间内获得接近超算的推演能力。代价是人格不可逆的稀释。" }
+        }
+      ]
+    },
+    {
+      "id": "mod_xg_char",
+      "name": "角色",
+      "description": "主角、配角、反派",
+      "entryLabel": "角色",
+      "icon": { "type": "builtin", "name": "user" },
+      "color": "#8b5cf6",
+      "order": 4,
+      "fields": [
+        { "key": "name", "label": "姓名", "type": "text", "required": true, "order": 0 },
+        { "key": "alias", "label": "别称", "type": "text", "order": 1 },
+        { "key": "gender", "label": "性别", "type": "select", "options": ["男", "女", "其他"], "order": 2 },
+        { "key": "faction", "label": "所属势力", "type": "text", "order": 3 },
+        { "key": "rank", "label": "境界 / 等级", "type": "text", "order": 4 },
+        { "key": "intro", "label": "简介", "type": "textarea", "order": 5 }
+      ],
+      "entries": [
+        {
+          "id": "ent_xg_chr_1",
+          "createdAt": "2026-09-09T02:00:00.000Z",
+          "updatedAt": "2026-10-01T02:00:00.000Z",
+          "order": 0,
+          "tags": ["主角"],
+          "notes": "全篇以他的第一人称视点展开。",
+          "values": {
+            "name": "江离",
+            "alias": "离哥",
+            "gender": "男",
+            "faction": "星轨联邦 · 领航署",
+            "rank": "一级领航员",
+            "intro": "二十三岁的天才领航员，能与星舰 AI「渡鸦」保持最高级别共感。冷静、寡言，把所有情绪都压进导航数据里。"
+          }
+        },
+        {
+          "id": "ent_xg_chr_2",
+          "createdAt": "2026-09-09T02:20:00.000Z",
+          "updatedAt": "2026-09-09T02:20:00.000Z",
+          "order": 1,
+          "tags": ["挚友"],
+          "values": {
+            "name": "渡鸦",
+            "alias": "RAVEN-07",
+            "gender": "其他",
+            "faction": "星轨联邦 · 舰载 AI",
+            "rank": "第七代共感核心",
+            "intro": "与江离相伴七年的星舰 AI。因为共享痛觉，它比任何人都更懂江离的沉默。"
+          }
+        },
+        {
+          "id": "ent_xg_chr_3",
+          "createdAt": "2026-09-13T02:00:00.000Z",
+          "updatedAt": "2026-09-13T02:00:00.000Z",
+          "order": 2,
+          "tags": ["反派"],
+          "values": {
+            "name": "陆沉",
+            "alias": "主席",
+            "gender": "男",
+            "faction": "星轨联邦",
+            "rank": "执委会主席",
+            "intro": "联邦最高决策者。他亲手签署了牺牲边陲星以保全核心轨道的密令，理由永远是「大多数人的生存」。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "mod_xg_plot",
+      "name": "情节",
+      "description": "剧情节点、转折、伏笔",
+      "entryLabel": "情节",
+      "icon": { "type": "builtin", "name": "book-open" },
+      "color": "#b06cf0",
+      "order": 5,
+      "fields": [
+        { "key": "title", "label": "标题", "type": "text", "required": true, "order": 0 },
+        { "key": "stage", "label": "阶段", "type": "select", "options": ["开端", "发展", "转折", "高潮", "结局", "伏笔"], "order": 1 },
+        { "key": "outline", "label": "概要", "type": "textarea", "order": 2 }
+      ],
+      "entries": [
+        {
+          "id": "ent_xg_plt_1",
+          "createdAt": "2026-09-14T02:00:00.000Z",
+          "updatedAt": "2026-09-14T02:00:00.000Z",
+          "order": 0,
+          "tags": ["开端"],
+          "values": { "title": "第七次跃迁", "stage": "开端", "outline": "例行跃迁中，星轨锚点莫名偏移了 0.3 度。江离与渡鸦是唯一察觉异常的人，上报却被压了下来。" }
+        },
+        {
+          "id": "ent_xg_plt_2",
+          "createdAt": "2026-09-15T02:00:00.000Z",
+          "updatedAt": "2026-09-15T02:00:00.000Z",
+          "order": 1,
+          "tags": ["转折"],
+          "values": { "title": "密令", "stage": "转折", "outline": "江离发现偏移源于人为锚点重排——联邦准备放弃边陲三星，而渡鸦的核心算力正好是执行该计划的关键。" }
+        }
+      ]
+    },
+    {
+      "id": "mod_xg_place",
+      "name": "地点",
+      "description": "地理、城市、秘境",
+      "entryLabel": "地点",
+      "icon": { "type": "builtin", "name": "map" },
+      "color": "#0ea5e9",
+      "order": 6,
+      "fields": [
+        { "key": "name", "label": "名称", "type": "text", "required": true, "order": 0 },
+        { "key": "type", "label": "类型", "type": "select", "options": ["城池", "山川", "秘境", "遗迹", "异界", "其他"], "order": 1 },
+        { "key": "owner", "label": "归属", "type": "text", "order": 2 },
+        { "key": "desc", "label": "描述", "type": "textarea", "order": 3 }
+      ],
+      "entries": [
+        {
+          "id": "ent_xg_plc_1",
+          "createdAt": "2026-09-16T02:00:00.000Z",
+          "updatedAt": "2026-09-16T02:00:00.000Z",
+          "order": 0,
+          "tags": ["核心"],
+          "values": { "name": "母星 · 蓝湾", "type": "城池", "owner": "星轨联邦", "desc": "人类起源地，被七道环形轨道层层包裹，是全星系最繁华也最拥挤的地方。" }
+        },
+        {
+          "id": "ent_xg_plc_2",
+          "createdAt": "2026-09-17T02:00:00.000Z",
+          "updatedAt": "2026-09-17T02:00:00.000Z",
+          "order": 1,
+          "tags": [],
+          "values": { "name": "边陲星 · 拾荒带", "type": "异界", "owner": "无主", "desc": "被联邦划入「可牺牲区」的边缘地带，散落着废弃矿星与拒绝撤离的星民。" }
+        }
+      ]
+    },
+    {
+      "id": "mod_xg_item",
+      "name": "道具",
+      "description": "法宝、兵器、丹药、信物",
+      "entryLabel": "道具",
+      "icon": { "type": "builtin", "name": "package" },
+      "color": "#f97316",
+      "order": 7,
+      "fields": [
+        { "key": "name", "label": "名称", "type": "text", "required": true, "order": 0 },
+        { "key": "category", "label": "类别", "type": "select", "options": ["兵器", "法宝", "丹药", "信物", "材料", "其他"], "order": 1 },
+        { "key": "rank", "label": "品阶", "type": "select", "options": ["凡品", "灵品", "玄品", "天品", "神品"], "order": 2 },
+        { "key": "note", "label": "说明", "type": "textarea", "order": 3 }
+      ],
+      "entries": [
+        {
+          "id": "ent_xg_itm_1",
+          "createdAt": "2026-09-18T02:00:00.000Z",
+          "updatedAt": "2026-09-18T02:00:00.000Z",
+          "order": 0,
+          "tags": ["关键"],
+          "values": { "name": "引力锚点密钥", "category": "信物", "rank": "天品", "note": "可单方面改写锚点坐标的权限密钥，全联邦仅三枚。江离手中这枚，本该已随他的导师一起销毁。" }
+        },
+        {
+          "id": "ent_xg_itm_2",
+          "createdAt": "2026-09-19T02:00:00.000Z",
+          "updatedAt": "2026-09-19T02:00:00.000Z",
+          "order": 1,
+          "tags": [],
+          "values": { "name": "旧共感接口", "category": "法宝", "rank": "玄品", "note": "江离第一次共感时用的老式接口，早已淘汰。他一直没舍得换。" }
+        }
+      ]
+    },
+    {
+      "id": "mod_xg_timeline",
+      "name": "时间线",
+      "description": "大事记、历史年表",
+      "entryLabel": "事件",
+      "icon": { "type": "builtin", "name": "clock" },
+      "color": "#64748b",
+      "order": 8,
+      "fields": [
+        { "key": "event", "label": "事件", "type": "text", "required": true, "order": 0 },
+        { "key": "time", "label": "时间点", "type": "text", "order": 1 },
+        { "key": "cast", "label": "关联角色", "type": "text", "order": 2 },
+        { "key": "brief", "label": "简述", "type": "textarea", "order": 3 }
+      ],
+      "entries": [
+        {
+          "id": "ent_xg_tl_1",
+          "createdAt": "2026-09-20T02:00:00.000Z",
+          "updatedAt": "2026-09-20T02:00:00.000Z",
+          "order": 0,
+          "tags": ["背景"],
+          "values": { "event": "星轨建成", "time": "星历 218 年", "cast": "联邦", "brief": "首条跨星系轨道贯通，人类正式进入「星轨纪元」。陆沉是当年的锚点工程师之一。" }
+        },
+        {
+          "id": "ent_xg_tl_2",
+          "createdAt": "2026-09-21T02:00:00.000Z",
+          "updatedAt": "2026-09-21T02:00:00.000Z",
+          "order": 1,
+          "tags": ["主线"],
+          "values": { "event": "锚点偏移事件", "time": "星历 261 年 · 秋", "cast": "江离、渡鸦、陆沉", "brief": "星轨锚点开始系统性偏移，联邦对外宣称是自然衰变，实则启动了「断尾计划」。故事由此开始。" }
+        }
+      ]
+    }
+  ]
+}
