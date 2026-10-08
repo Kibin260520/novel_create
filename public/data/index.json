@@ -1,20 +1,7 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-08T07:38:27.693Z",
+  "updatedAt": "2026-10-08T07:40:00.020Z",
   "novels": [
-    {
-      "id": "novel_qingming",
-      "title": "青冥剑歌",
-      "author": "薛仙",
-      "cover": "",
-      "summary": "少年林砚自青冥山下走出，以一剑叩问天道，在宗门倾轧与魔道复苏之间，寻找剑道尽头的那缕光。",
-      "tags": [
-        "东方玄幻",
-        "剑修",
-        "长篇"
-      ],
-      "file": "novels/novel_qingming.json"
-    },
     {
       "id": "novel_xinggui",
       "title": "星轨挽歌",
@@ -27,17 +14,6 @@
         "中篇"
       ],
       "file": "novels/novel_xinggui.json"
-    },
-    {
-      "id": "novel_wCRyzMtBAO",
-      "title": "第一本小说",
-      "author": "kibin",
-      "cover": "",
-      "summary": "",
-      "tags": [
-        "玄幻"
-      ],
-      "file": "novels/novel_wCRyzMtBAO.json"
     }
   ]
 }
