@@ -106,16 +106,6 @@ export function NovelPage() {
           <button className="btn" onClick={() => setNovelFormOpen(true)} disabled={!novel}>
             <UiIcon name="edit" size={16} /> 编辑信息
           </button>
-          <button
-            className="btn btn-primary"
-            onClick={() => {
-              setEditingModule(null)
-              setModuleFormOpen(true)
-            }}
-            disabled={!novel}
-          >
-            <UiIcon name="plus" size={16} /> 新增模块
-          </button>
         </div>
       </div>
 
@@ -220,6 +210,7 @@ export function NovelPage() {
       <ModuleForm
         open={moduleFormOpen}
         initial={editingModule}
+        modules={novel?.modules}
         onClose={() => setModuleFormOpen(false)}
         onSubmit={submitModule}
       />

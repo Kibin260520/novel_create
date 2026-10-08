@@ -19,6 +19,8 @@ export interface ModuleFormValue {
 interface Props {
   open: boolean
   initial?: Module | null
+  /** 同一本小说里的全部模块，「引用」字段需要用它来选目标模块 */
+  modules?: Module[]
   onClose: () => void
   onSubmit: (value: ModuleFormValue) => Promise<void>
 }
@@ -28,7 +30,7 @@ const DEFAULT_FIELDS = (): FieldDef[] => [
   { key: 'note', label: '说明', type: 'textarea', order: 1 },
 ]
 
-export function ModuleForm({ open, initial, onClose, onSubmit }: Props) {
+export function ModuleForm({ open, initial, modules, onClose, onSubmit }: Props) {
   const [name, setName] = useState('')
   const [entryLabel, setEntryLabel] = useState('')
   const [description, setDescription] = useState('')
@@ -148,8 +150,14 @@ export function ModuleForm({ open, initial, onClose, onSubmit }: Props) {
         <label className="field-label">条目字段定义</label>
         <span className="field-hint" style={{ marginBottom: 8, display: 'block' }}>
           决定每个条目能填哪些内容。改了字段定义后，已有条目里对应的值会保留。
+          想建立条目之间的关联，就把字段类型设为「引用其它条目」。
         </span>
-        <FieldDefEditor fields={fields} onChange={setFields} />
+        <FieldDefEditor
+          fields={fields}
+          onChange={setFields}
+          modules={modules}
+          selfModuleId={initial?.id}
+        />
       </div>
 
       {!initial && (

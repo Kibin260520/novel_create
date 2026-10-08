@@ -1056,3 +1056,69 @@
   font-size: 12px;
   line-height: 1.65;
 }
+
+/* =========================================================
+   引用（关联关系）
+   ========================================================= */
+.ref-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 6px 4px 10px;
+  border-radius: var(--r-pill);
+  background: var(--accent-soft);
+  border: 1px solid color-mix(in srgb, var(--accent) 26%, transparent);
+  color: var(--accent-strong);
+  font-size: 13px;
+  font-weight: 600;
+}
+.ref-chip-x {
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: inherit;
+  opacity: 0.6;
+  transition: opacity var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+.ref-chip-x:hover {
+  opacity: 1;
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+/* 旧数据里是纯文本、还没转成引用的值 */
+.ref-legacy {
+  padding: 9px 11px;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--r-sm);
+  background: var(--glass-bg-soft);
+  color: var(--text-2);
+  font-size: 13px;
+}
+
+/* 可点击的引用标签（详情页 & 反向引用） */
+.ref-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border: 1px solid color-mix(in srgb, var(--accent) 26%, transparent);
+  border-radius: var(--r-pill);
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  font-size: 13px;
+  font-weight: 600;
+  transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+.ref-link:hover {
+  background: color-mix(in srgb, var(--accent) 24%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 44%, transparent);
+}
+.ref-link-mod {
+  font-size: 11px;
+  font-weight: 500;
+  opacity: 0.72;
+}

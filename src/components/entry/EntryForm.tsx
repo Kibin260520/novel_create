@@ -3,12 +3,14 @@ import { Modal } from '@/components/common/Modal'
 import { TagsInput } from '@/components/common/TagsInput'
 import { DynamicFieldInput } from './DynamicFieldInput'
 import { UiIcon } from '@/components/icons/UiIcon'
-import type { Module, Entry } from '@/types/data'
+import type { Module, Entry, Novel } from '@/types/data'
 
 interface Props {
   open: boolean
   module: Module
   initial?: Entry | null
+  /** 所在的整本小说，引用字段需要它来解析目标条目 */
+  novel?: Novel
   onClose: () => void
   onSubmit: (
     values: Record<string, unknown>,
@@ -16,7 +18,7 @@ interface Props {
   ) => Promise<void>
 }
 
-export function EntryForm({ open, module, initial, onClose, onSubmit }: Props) {
+export function EntryForm({ open, module, initial, novel, onClose, onSubmit }: Props) {
   const [values, setValues] = useState<Record<string, unknown>>({})
   const [notes, setNotes] = useState('')
   const [tags, setTags] = useState<string[]>([])
@@ -100,6 +102,7 @@ export function EntryForm({ open, module, initial, onClose, onSubmit }: Props) {
               <DynamicFieldInput
                 field={f}
                 value={values[f.key]}
+                novel={novel}
                 onChange={(v) => setValues((prev) => ({ ...prev, [f.key]: v }))}
               />
               {touched && f.required && missing.some((m) => m.key === f.key) && (

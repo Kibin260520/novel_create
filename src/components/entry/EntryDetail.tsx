@@ -2,22 +2,36 @@ import { Modal } from '@/components/common/Modal'
 import { UiIcon } from '@/components/icons/UiIcon'
 import { SvgIcon } from '@/components/icons/SvgIcon'
 import { formatDateTime, valueToText } from '@/lib/format'
-import type { Entry, Module } from '@/types/data'
+import { collectBacklinks, displayValue, refIdsOf, resolveRef } from '@/lib/refs'
+import type { Entry, Module, Novel } from '@/types/data'
 
 interface Props {
   open: boolean
   module: Module
   entry: Entry | null
+  /** 所在的整本小说，用于解析引用与反向引用 */
+  novel?: Novel
   onClose: () => void
   onEdit: () => void
   onDelete: () => void
+  /** 点引用标签时跳到目标条目 */
+  onNavigate?: (moduleId: string, entryId: string) => void
 }
 
-export function EntryDetail({ open, module, entry, onClose, onEdit, onDelete }: Props) {
+export function EntryDetail({
+  open,
+  module,
+  entry,
+  novel,
+  onClose,
+  onEdit,
+  onDelete,
+  onNavigate,
+}: Props) {
   if (!entry) return null
   const fields = [...module.fields].sort((a, b) => a.order - b.order)
   const filled = fields
-    .map((f) => ({ f, text: valueToText(entry.values[f.key]) }))
+    .map((f) => ({ f, text: displayValue(novel, f, entry.values[f.key]) }))
     .filter((x) => x.text)
 
   const headline =
@@ -25,6 +39,8 @@ export function EntryDetail({ open, module, entry, onClose, onEdit, onDelete }: 
     valueToText(entry.values.title) ||
     valueToText(entry.values.event) ||
     '详情'
+
+  const backlinks = collectBacklinks(novel, module.id, entry.id)
 
   return (
     <Modal
@@ -71,11 +87,34 @@ export function EntryDetail({ open, module, entry, onClose, onEdit, onDelete }: 
                     {text}
                   </a>
                 ) : f.type === 'image' ? (
-                  <img
-                    src={text}
-                    alt=""
-                    style={{ maxWidth: 260, borderRadius: 'var(--r-sm)' }}
-                  />
+                  <img src={text} alt="" style={{ maxWidth: 260, borderRadius: 'var(--r-sm)' }} />
+                ) : f.type === 'ref' ? (
+                  <span className="row gap-2 wrap">
+                    {refIdsOf(entry.values[f.key]).map((id) => {
+                      const ref = resolveRef(novel, f.refModuleId, id)
+                      if (!ref) {
+                        // 旧数据遗留的纯文本，原样显示，不做跳转
+                        return (
+                          <span className="muted" key={id}>
+                            {id}
+                          </span>
+                        )
+                      }
+                      return (
+                        <button
+                          type="button"
+                          key={id}
+                          className="ref-link"
+                          title={`跳到「${ref.moduleName}」中的这条`}
+                          onClick={() => onNavigate?.(ref.moduleId, ref.entryId)}
+                        >
+                          <UiIcon name="link" size={13} />
+                          {ref.label}
+                          <span className="ref-link-mod">{ref.moduleName}</span>
+                        </button>
+                      )
+                    })}
+                  </span>
                 ) : (
                   text
                 )}
@@ -83,6 +122,31 @@ export function EntryDetail({ open, module, entry, onClose, onEdit, onDelete }: 
             </div>
           ))}
         </div>
+      )}
+
+      {backlinks.length > 0 && (
+        <>
+          <div className="divider" />
+          <div className="stack gap-2">
+            <span className="muted" style={{ fontSize: 13 }}>
+              <UiIcon name="link" size={13} /> 被 {backlinks.length} 处引用
+            </span>
+            <div className="row gap-2 wrap">
+              {backlinks.map((b) => (
+                <button
+                  type="button"
+                  key={`${b.moduleId}-${b.entryId}-${b.fieldLabel}`}
+                  className="ref-link"
+                  title={`${b.moduleName} · 通过「${b.fieldLabel}」引用`}
+                  onClick={() => onNavigate?.(b.moduleId, b.entryId)}
+                >
+                  <span className="ref-link-mod">{b.moduleName}</span>
+                  {b.entryLabel}
+                </button>
+              ))}
+            </div>
+          </div>
+        </>
       )}
 
       {(entry.tags?.length ?? 0) > 0 && (

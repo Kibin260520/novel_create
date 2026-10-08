@@ -63,6 +63,10 @@ function normField(f: Partial<FieldDef>, i: number): FieldDef {
     options: asArray<string>(f.options),
     placeholder: f.placeholder,
     order: typeof f.order === 'number' ? f.order : i,
+    // 引用字段的配置必须原样保留。少了这两项，数据从远端读回来时
+    // 关联关系会被静默抹掉（缓存路径不归一化，所以只在真实加载时暴露）。
+    refModuleId: f.refModuleId,
+    multiple: f.multiple ? true : undefined,
   }
 }
 

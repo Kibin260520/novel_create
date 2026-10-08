@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs'
 import { EntryCard } from '@/components/entry/EntryCard'
 import { EntryForm } from '@/components/entry/EntryForm'
@@ -13,6 +13,7 @@ import { UiIcon } from '@/components/icons/UiIcon'
 import { useData } from '@/store/DataContext'
 import { useToast } from '@/components/common/Toast'
 import { valueToText } from '@/lib/format'
+import { displayValue } from '@/lib/refs'
 import type { Entry } from '@/types/data'
 
 export function ModulePage() {
@@ -43,10 +44,50 @@ export function ModulePage() {
   const [moduleFormOpen, setModuleFormOpen] = useState(false)
   const [pendingDeleteModule, setPendingDeleteModule] = useState(false)
 
+  // ?entry=<id> 支持从别的模块（引用/反向引用）直接跳到某条
+  const [searchParams, setSearchParams] = useSearchParams()
+  const deepEntryId = searchParams.get('entry')
+  const handledDeep = useRef<string | null>(null)
+
   useEffect(() => {
     void loadNovel(novelId)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [novelId])
+
+  useEffect(() => {
+    if (!deepEntryId) {
+      handledDeep.current = null
+      return
+    }
+    if (!module || handledDeep.current === deepEntryId) return
+    const target = module.entries.find((e) => e.id === deepEntryId)
+    if (target) {
+      setDetailEntry(target)
+      handledDeep.current = deepEntryId
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [deepEntryId, module])
+
+  const closeDetail = () => {
+    setDetailEntry(null)
+    handledDeep.current = null
+    if (deepEntryId) {
+      const next = new URLSearchParams(searchParams)
+      next.delete('entry')
+      setSearchParams(next, { replace: true })
+    }
+  }
+
+  /** 点引用标签：关掉弹窗并跳到目标条目 */
+  const goToEntry = (targetModuleId: string, targetEntryId: string) => {
+    setDetailEntry(null)
+    handledDeep.current = null
+    if (targetModuleId === moduleId) {
+      setSearchParams({ entry: targetEntryId }, { replace: true })
+    } else {
+      navigate(`/novel/${novelId}/module/${targetModuleId}?entry=${targetEntryId}`)
+    }
+  }
 
   // 详情弹窗要跟数据保持同步
   const liveDetail = detailEntry
@@ -57,8 +98,11 @@ export function ModulePage() {
     const list = [...(module?.entries ?? [])].sort((a, b) => a.order - b.order)
     const q = query.trim().toLowerCase()
     if (!q) return list
+    const fields = module?.fields ?? []
     return list.filter((e) => {
       const hay = [
+        // 引用字段要按「条目名字」搜，否则搜到的是内部 id，等于搜不到
+        ...fields.map((f) => displayValue(novel, f, e.values[f.key])),
         ...Object.values(e.values).map(valueToText),
         e.notes ?? '',
         ...(e.tags ?? []),
@@ -67,7 +111,7 @@ export function ModulePage() {
         .toLowerCase()
       return hay.includes(q)
     })
-  }, [module, query])
+  }, [module, query, novel])
 
   const label = module?.entryLabel || module?.name || '条目'
 
@@ -154,15 +198,6 @@ export function ModulePage() {
           <button className="btn" onClick={() => setModuleFormOpen(true)}>
             <UiIcon name="settings" size={16} /> 模块设置
           </button>
-          <button
-            className="btn btn-primary"
-            onClick={() => {
-              setEditingEntry(null)
-              setEntryFormOpen(true)
-            }}
-          >
-            <UiIcon name="plus" size={16} /> 新增{label}
-          </button>
         </div>
       </div>
 
@@ -218,6 +253,7 @@ export function ModulePage() {
               key={e.id}
               module={module}
               entry={e}
+              novel={novel}
               onOpen={() => setDetailEntry(e)}
               onEdit={() => {
                 setEditingEntry(e)
@@ -245,6 +281,7 @@ export function ModulePage() {
       <EntryForm
         open={entryFormOpen}
         module={module}
+        novel={novel}
         initial={editingEntry}
         onClose={() => setEntryFormOpen(false)}
         onSubmit={submitEntry}
@@ -254,18 +291,20 @@ export function ModulePage() {
         open={!!liveDetail}
         module={module}
         entry={liveDetail}
-        onClose={() => setDetailEntry(null)}
+        novel={novel}
+        onClose={closeDetail}
+        onNavigate={goToEntry}
         onEdit={() => {
           if (liveDetail) {
             setEditingEntry(liveDetail)
-            setDetailEntry(null)
+            closeDetail()
             setEntryFormOpen(true)
           }
         }}
         onDelete={() => {
           if (liveDetail) {
             setPendingDelete(liveDetail)
-            setDetailEntry(null)
+            closeDetail()
           }
         }}
       />
@@ -273,6 +312,7 @@ export function ModulePage() {
       <ModuleForm
         open={moduleFormOpen}
         initial={module}
+        modules={novel?.modules}
         onClose={() => setModuleFormOpen(false)}
         onSubmit={async (v: ModuleFormValue) => {
           await updateModule(novelId, moduleId, v)

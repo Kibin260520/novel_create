@@ -1,15 +1,18 @@
 import { UiIcon } from '@/components/icons/UiIcon'
 import { TagsInput } from '@/components/common/TagsInput'
+import { RefFieldInput } from './RefFieldInput'
 import { valueToText } from '@/lib/format'
-import type { FieldDef } from '@/types/data'
+import type { FieldDef, Novel } from '@/types/data'
 
 interface Props {
   field: FieldDef
   value: unknown
   onChange: (v: unknown) => void
+  /** 引用字段解析目标条目时需要 */
+  novel?: Novel
 }
 
-export function DynamicFieldInput({ field, value, onChange }: Props) {
+export function DynamicFieldInput({ field, value, onChange, novel }: Props) {
   const common = {
     className: field.type === 'textarea' ? 'textarea' : 'input',
     placeholder: field.placeholder,
@@ -127,6 +130,9 @@ export function DynamicFieldInput({ field, value, onChange }: Props) {
         </div>
       )
     }
+
+    case 'ref':
+      return <RefFieldInput field={field} value={value} onChange={onChange} novel={novel} />
 
     default:
       return (

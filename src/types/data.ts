@@ -14,6 +14,7 @@ export type FieldType =
   | 'date' // 日期
   | 'url' // 链接
   | 'image' // 图片地址
+  | 'ref' // 引用：指向同一本小说里另一个模块的条目
 
 /** 字段定义（模块的「字段说明书」） */
 export interface FieldDef {
@@ -27,6 +28,13 @@ export interface FieldDef {
   options?: string[]
   placeholder?: string
   order: number
+  /**
+   * type = 'ref' 时：被引用的模块 id（必须是同一本小说内的模块）。
+   * 引用值存在 values[key] 里，单值为条目 id 字符串，多值为条目 id 数组。
+   */
+  refModuleId?: string
+  /** type = 'ref' 时：是否允许引用多个条目 */
+  multiple?: boolean
 }
 
 /** 图标引用：内置图标 或 用户自定义 SVG */

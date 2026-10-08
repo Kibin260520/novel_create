@@ -1,9 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Breadcrumbs } from '@/components/layout/Breadcrumbs'
-import { NovelCard } from '@/components/novel/NovelCard'
+import { BookCard } from '@/components/novel/BookCard'
 import { NovelForm } from '@/components/novel/NovelForm'
-import { AddCard } from '@/components/common/AddCard'
 import { EmptyState } from '@/components/common/EmptyState'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 import { UiIcon } from '@/components/icons/UiIcon'
@@ -11,6 +9,11 @@ import { useData } from '@/store/DataContext'
 import { useToast } from '@/components/common/Toast'
 import type { Novel, NovelDraft } from '@/types/data'
 
+/**
+ * 首页 = 书架。
+ * 竖版书封网格 + 书名 + 副信息 +「⋮」菜单，样式走 .shelf-page（纸书质感）。
+ * 新增入口只保留网格末尾的「＋」，不再有顶部的紫色按钮。
+ */
 export function HomePage() {
   const { index, novels, loadingIndex, loadNovel, createNovel, updateNovel, deleteNovel } =
     useData()
@@ -44,6 +47,21 @@ export function HomePage() {
     )
   }, [list, query])
 
+  /** 全库统计，给页头用 */
+  const totals = useMemo(() => {
+    let modules = 0
+    let entries = 0
+    let loadedCount = 0
+    for (const n of list) {
+      const full = novels[n.id]
+      if (!full) continue
+      loadedCount += 1
+      modules += full.modules.length
+      entries += full.modules.reduce((s, m) => s + m.entries.length, 0)
+    }
+    return { modules, entries, loadedCount }
+  }, [list, novels])
+
   const submitNovel = async (draft: NovelDraft) => {
     if (editing) {
       await updateNovel(editing.id, draft)
@@ -57,22 +75,29 @@ export function HomePage() {
     }
   }
 
-  return (
-    <>
-      <Breadcrumbs items={[{ label: '首页' }]} />
+  const openCreate = () => {
+    setEditing(null)
+    setFormOpen(true)
+  }
 
-      <div className="page-head">
-        <div className="page-title">
-          <div>
-            <h1>我的小说</h1>
-            <div className="page-sub">
-              {list.length > 0
-                ? `共 ${list.length} 本 · 每本都可独立管理设定、角色、情节等模块`
-                : '为每一本书建立自己的资料库'}
-            </div>
-          </div>
+  const loading = loadingIndex && list.length === 0
+
+  return (
+    <div className="shelf-page">
+      <div className="shelf-head">
+        <div className="shelf-heading">
+          <h1 className="shelf-title">书架</h1>
+          <span className="shelf-count">
+            {list.length > 0
+              ? `共 ${list.length} 本${
+                  totals.loadedCount === list.length
+                    ? ` · ${totals.modules} 个模块 · ${totals.entries} 条记录`
+                    : ''
+                }`
+              : '还没有书'}
+          </span>
         </div>
-        <div className="page-actions">
+        <div className="shelf-tools">
           {list.length > 0 && (
             <div className="search">
               <UiIcon name="search" size={16} />
@@ -84,49 +109,34 @@ export function HomePage() {
               />
             </div>
           )}
-          <button
-            className="btn btn-primary"
-            onClick={() => {
-              setEditing(null)
-              setFormOpen(true)
-            }}
-          >
-            <UiIcon name="plus" size={16} /> 新增小说
-          </button>
         </div>
       </div>
 
-      {loadingIndex && list.length === 0 ? (
-        <div className="grid">
-          {[0, 1, 2].map((i) => (
-            <div key={i} className="card glass">
-              <div className="skeleton" style={{ height: 48, width: '60%' }} />
-              <div className="skeleton" style={{ height: 12, width: '90%' }} />
-              <div className="skeleton" style={{ height: 12, width: '75%' }} />
+      {loading ? (
+        <div className="shelf-grid">
+          {[0, 1, 2, 3, 4, 5].map((i) => (
+            <div className="book" key={i}>
+              <div className="book-sk-cover" />
+              <div className="book-sk-line" style={{ width: '82%' }} />
+              <div className="book-sk-line" style={{ width: '48%', height: 10 }} />
             </div>
           ))}
         </div>
       ) : list.length === 0 ? (
         <EmptyState
           icon="layers"
-          title="还没有小说"
-          desc="点下面的按钮，创建你的第一本书。创建后会自动带上 设定 / 势力 / 灵感 / 技能名 / 角色 / 情节 / 地点 / 道具 / 时间线 这 9 个模块。"
+          title="书架还空着"
+          desc="点下面的「＋」，创建你的第一本书。创建后会自动带上 设定 / 势力 / 灵感 / 技能名 / 角色 / 情节 / 地点 / 道具 / 时间线 这 9 个模块。"
           action={
-            <button
-              className="btn btn-primary"
-              onClick={() => {
-                setEditing(null)
-                setFormOpen(true)
-              }}
-            >
+            <button className="btn btn-primary" onClick={openCreate}>
               <UiIcon name="plus" size={16} /> 新增小说
             </button>
           }
         />
       ) : (
-        <div className="grid grid-lg">
+        <div className="shelf-grid">
           {filtered.map((n) => (
-            <NovelCard
+            <BookCard
               key={n.id}
               novel={n}
               loaded={novels[n.id]}
@@ -143,20 +153,18 @@ export function HomePage() {
             />
           ))}
           {!query && (
-            <AddCard
-              label="新增小说"
-              hint="想写多少本就写多少本"
-              onClick={() => {
-                setEditing(null)
-                setFormOpen(true)
-              }}
-            />
+            <button type="button" className="book-add" onClick={openCreate}>
+              <span className="plus-ring">
+                <UiIcon name="plus" size={20} />
+              </span>
+              <span className="add-label">新增小说</span>
+            </button>
           )}
         </div>
       )}
 
       {query && filtered.length === 0 && (
-        <EmptyState icon="search" title="没有匹配的小说" desc={`没有找到包含「${query}」的结果`} />
+        <EmptyState icon="search" title="没有匹配的书" desc={`书架上没有包含「${query}」的书`} />
       )}
 
       <NovelForm
@@ -187,6 +195,6 @@ export function HomePage() {
           }
         }}
       />
-    </>
+    </div>
   )
 }

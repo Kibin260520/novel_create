@@ -1,10 +1,14 @@
 import { UiIcon } from '@/components/icons/UiIcon'
 import { newFieldKey } from '@/lib/id'
-import type { FieldDef, FieldType } from '@/types/data'
+import type { FieldDef, FieldType, Module } from '@/types/data'
 
 interface Props {
   fields: FieldDef[]
   onChange: (fields: FieldDef[]) => void
+  /** 同一本小说里的全部模块，供「引用」字段选择目标模块 */
+  modules?: Module[]
+  /** 当前正在编辑的模块 id，用于在列表里标出「本模块」 */
+  selfModuleId?: string
 }
 
 const TYPE_LABELS: { value: FieldType; label: string }[] = [
@@ -16,9 +20,10 @@ const TYPE_LABELS: { value: FieldType; label: string }[] = [
   { value: 'date', label: '日期' },
   { value: 'url', label: '链接' },
   { value: 'image', label: '图片地址' },
+  { value: 'ref', label: '引用其它条目' },
 ]
 
-export function FieldDefEditor({ fields, onChange }: Props) {
+export function FieldDefEditor({ fields, onChange, modules, selfModuleId }: Props) {
   const update = (i: number, patch: Partial<FieldDef>) =>
     onChange(fields.map((f, idx) => (idx === i ? { ...f, ...patch } : f)))
 
@@ -67,9 +72,19 @@ export function FieldDefEditor({ fields, onChange }: Props) {
             />
             <select
               className="select"
-              style={{ width: 128 }}
+              style={{ width: 132 }}
               value={f.type}
-              onChange={(e) => update(i, { type: e.target.value as FieldType })}
+              onChange={(e) => {
+                const type = e.target.value as FieldType
+                const patch: Partial<FieldDef> = { type }
+                // 切到引用时，先给个默认可引用的模块，省得用户还要自己找
+                if (type === 'ref' && !f.refModuleId && modules?.length) {
+                  const fallback =
+                    modules.find((m) => m.id !== selfModuleId) ?? modules[0]
+                  patch.refModuleId = fallback.id
+                }
+                update(i, patch)
+              }}
             >
               {TYPE_LABELS.map((t) => (
                 <option key={t.value} value={t.value}>
@@ -130,6 +145,36 @@ export function FieldDefEditor({ fields, onChange }: Props) {
                 })
               }
             />
+          )}
+
+          {f.type === 'ref' && (
+            <div className="row gap-3 wrap" style={{ marginTop: 8 }}>
+              <label className="row gap-2" style={{ fontSize: 13, color: 'var(--text-2)' }}>
+                引用模块
+                <select
+                  className="select"
+                  style={{ width: 160 }}
+                  value={f.refModuleId ?? ''}
+                  onChange={(e) => update(i, { refModuleId: e.target.value || undefined })}
+                >
+                  <option value="">— 请选择 —</option>
+                  {(modules ?? []).map((m) => (
+                    <option key={m.id} value={m.id}>
+                      {m.name}
+                      {m.id === selfModuleId ? '（本模块）' : ''}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="row gap-1" style={{ fontSize: 13, color: 'var(--text-2)' }}>
+                <input
+                  type="checkbox"
+                  checked={!!f.multiple}
+                  onChange={(e) => update(i, { multiple: e.target.checked })}
+                />
+                允许引用多个
+              </label>
+            </div>
           )}
         </div>
       ))}
