@@ -1,24 +1,43 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-07T11:00:00.000Z",
+  "updatedAt": "2026-10-08T07:38:27.693Z",
   "novels": [
     {
       "id": "novel_qingming",
       "title": "青冥剑歌",
       "author": "薛仙",
-      "summary": "少年林砚自青冥山下走出，以一剑叩问天道，在宗门倾轧与魔道复苏之间，寻找剑道尽头的那缕光。",
-      "tags": ["东方玄幻", "剑修", "长篇"],
       "cover": "",
+      "summary": "少年林砚自青冥山下走出，以一剑叩问天道，在宗门倾轧与魔道复苏之间，寻找剑道尽头的那缕光。",
+      "tags": [
+        "东方玄幻",
+        "剑修",
+        "长篇"
+      ],
       "file": "novels/novel_qingming.json"
     },
     {
       "id": "novel_xinggui",
       "title": "星轨挽歌",
       "author": "薛仙",
-      "summary": "当联邦的星轨被未知引力扭曲，领航员江离必须在母星存亡与挚友性命之间做出抉择。",
-      "tags": ["科幻", "星际", "中篇"],
       "cover": "",
+      "summary": "当联邦的星轨被未知引力扭曲，领航员江离必须在母星存亡与挚友性命之间做出抉择。",
+      "tags": [
+        "科幻",
+        "星际",
+        "中篇"
+      ],
       "file": "novels/novel_xinggui.json"
+    },
+    {
+      "id": "novel_wCRyzMtBAO",
+      "title": "第一本小说",
+      "author": "kibin",
+      "cover": "",
+      "summary": "",
+      "tags": [
+        "玄幻"
+      ],
+      "file": "novels/novel_wCRyzMtBAO.json"
     }
   ]
 }
