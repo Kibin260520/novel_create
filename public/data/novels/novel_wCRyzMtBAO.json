@@ -9,24 +9,25 @@
   ],
   "summary": "",
   "createdAt": "2026-10-08T07:38:27.693Z",
-  "updatedAt": "2026-10-08T07:38:27.693Z",
+  "updatedAt": "2026-10-08T07:59:51.718Z",
   "modules": [
     {
       "id": "mod_4EsFz1keH6",
       "name": "设定",
-      "entryLabel": "设定",
       "description": "世界规则、力量体系、背景设定",
       "icon": {
         "type": "builtin",
         "name": "book"
       },
       "color": "#6366f1",
+      "entryLabel": "设定",
       "fields": [
         {
           "key": "name",
           "label": "名称",
           "type": "text",
           "required": true,
+          "options": [],
           "placeholder": "如：灵气修炼体系",
           "order": 0
         },
@@ -34,6 +35,7 @@
           "key": "category",
           "label": "类别",
           "type": "select",
+          "required": false,
           "options": [
             "世界观",
             "力量体系",
@@ -47,6 +49,8 @@
           "key": "detail",
           "label": "详情",
           "type": "textarea",
+          "required": false,
+          "options": [],
           "placeholder": "展开描述这条设定…",
           "order": 2
         }
@@ -57,19 +61,20 @@
     {
       "id": "mod_LFgTfp9vku",
       "name": "势力",
-      "entryLabel": "势力",
       "description": "门派、组织、国家、阵营",
       "icon": {
         "type": "builtin",
         "name": "shield"
       },
       "color": "#e5484d",
+      "entryLabel": "势力",
       "fields": [
         {
           "key": "name",
           "label": "名称",
           "type": "text",
           "required": true,
+          "options": [],
           "placeholder": "如：青云宗",
           "order": 0
         },
@@ -77,6 +82,7 @@
           "key": "type",
           "label": "类型",
           "type": "select",
+          "required": false,
           "options": [
             "宗门",
             "家族",
@@ -91,12 +97,16 @@
           "key": "leader",
           "label": "首领",
           "type": "text",
+          "required": false,
+          "options": [],
           "order": 2
         },
         {
           "key": "stance",
           "label": "立场",
           "type": "text",
+          "required": false,
+          "options": [],
           "placeholder": "如：正道 / 中立 / 魔道",
           "order": 3
         },
@@ -104,6 +114,8 @@
           "key": "intro",
           "label": "简介",
           "type": "textarea",
+          "required": false,
+          "options": [],
           "order": 4
         }
       ],
@@ -113,19 +125,20 @@
     {
       "id": "mod_Rb1B6tVl7c",
       "name": "灵感",
-      "entryLabel": "灵感",
       "description": "零散的点子、桥段、画面",
       "icon": {
         "type": "builtin",
         "name": "sparkles"
       },
       "color": "#f5a524",
+      "entryLabel": "灵感",
       "fields": [
         {
           "key": "idea",
           "label": "灵感内容",
           "type": "textarea",
           "required": true,
+          "options": [],
           "placeholder": "随手记下的一个念头…",
           "order": 0
         },
@@ -133,6 +146,8 @@
           "key": "source",
           "label": "来源",
           "type": "text",
+          "required": false,
+          "options": [],
           "placeholder": "梦 / 读书 / 音乐 / 生活",
           "order": 1
         },
@@ -140,28 +155,44 @@
           "key": "tags",
           "label": "关键词",
           "type": "tags",
+          "required": false,
+          "options": [],
           "order": 2
         }
       ],
-      "entries": [],
+      "entries": [
+        {
+          "id": "ent_Fzu_1hv85k",
+          "createdAt": "2026-10-08T07:59:51.718Z",
+          "updatedAt": "2026-10-08T07:59:51.718Z",
+          "values": {
+            "source": "抖音",
+            "idea": "BOSS在主角团里当混子，到最终战才变脸"
+          },
+          "notes": "",
+          "tags": [],
+          "order": 0
+        }
+      ],
       "order": 2
     },
     {
       "id": "mod_NFQGApIjEI",
       "name": "技能名",
-      "entryLabel": "技能",
       "description": "功法、招式、术法名称",
       "icon": {
         "type": "builtin",
         "name": "sword"
       },
       "color": "#10a37f",
+      "entryLabel": "技能",
       "fields": [
         {
           "key": "name",
           "label": "名称",
           "type": "text",
           "required": true,
+          "options": [],
           "placeholder": "如：寒江独钓",
           "order": 0
         },
@@ -169,6 +200,7 @@
           "key": "category",
           "label": "类别",
           "type": "select",
+          "required": false,
           "options": [
             "攻击",
             "防御",
@@ -183,6 +215,7 @@
           "key": "rank",
           "label": "品阶",
           "type": "select",
+          "required": false,
           "options": [
             "凡阶",
             "灵阶",
@@ -196,6 +229,8 @@
           "key": "effect",
           "label": "效果",
           "type": "textarea",
+          "required": false,
+          "options": [],
           "order": 3
         }
       ],
@@ -205,19 +240,20 @@
     {
       "id": "mod_xGfbXakObB",
       "name": "角色",
-      "entryLabel": "角色",
       "description": "主角、配角、反派",
       "icon": {
         "type": "builtin",
         "name": "user"
       },
       "color": "#8b5cf6",
+      "entryLabel": "角色",
       "fields": [
         {
           "key": "name",
           "label": "姓名",
           "type": "text",
           "required": true,
+          "options": [],
           "placeholder": "如：林砚",
           "order": 0
         },
@@ -225,6 +261,8 @@
           "key": "alias",
           "label": "别称",
           "type": "text",
+          "required": false,
+          "options": [],
           "placeholder": "道号 / 外号",
           "order": 1
         },
@@ -232,6 +270,7 @@
           "key": "gender",
           "label": "性别",
           "type": "select",
+          "required": false,
           "options": [
             "男",
             "女",
@@ -243,18 +282,24 @@
           "key": "faction",
           "label": "所属势力",
           "type": "text",
+          "required": false,
+          "options": [],
           "order": 3
         },
         {
           "key": "rank",
           "label": "境界 / 等级",
           "type": "text",
+          "required": false,
+          "options": [],
           "order": 4
         },
         {
           "key": "intro",
           "label": "简介",
           "type": "textarea",
+          "required": false,
+          "options": [],
           "order": 5
         }
       ],
@@ -264,25 +309,27 @@
     {
       "id": "mod_STQhQiYnRD",
       "name": "情节",
-      "entryLabel": "情节",
       "description": "剧情节点、转折、伏笔",
       "icon": {
         "type": "builtin",
         "name": "book-open"
       },
       "color": "#b06cf0",
+      "entryLabel": "情节",
       "fields": [
         {
           "key": "title",
           "label": "标题",
           "type": "text",
           "required": true,
+          "options": [],
           "order": 0
         },
         {
           "key": "stage",
           "label": "阶段",
           "type": "select",
+          "required": false,
           "options": [
             "开端",
             "发展",
@@ -297,6 +344,8 @@
           "key": "outline",
           "label": "概要",
           "type": "textarea",
+          "required": false,
+          "options": [],
           "order": 2
         }
       ],
@@ -306,25 +355,27 @@
     {
       "id": "mod_VCMEbi3so4",
       "name": "地点",
-      "entryLabel": "地点",
       "description": "地理、城市、秘境",
       "icon": {
         "type": "builtin",
         "name": "map"
       },
       "color": "#0ea5e9",
+      "entryLabel": "地点",
       "fields": [
         {
           "key": "name",
           "label": "名称",
           "type": "text",
           "required": true,
+          "options": [],
           "order": 0
         },
         {
           "key": "type",
           "label": "类型",
           "type": "select",
+          "required": false,
           "options": [
             "城池",
             "山川",
@@ -339,12 +390,16 @@
           "key": "owner",
           "label": "归属",
           "type": "text",
+          "required": false,
+          "options": [],
           "order": 2
         },
         {
           "key": "desc",
           "label": "描述",
           "type": "textarea",
+          "required": false,
+          "options": [],
           "order": 3
         }
       ],
@@ -354,25 +409,27 @@
     {
       "id": "mod_67ycyHZTUh",
       "name": "道具",
-      "entryLabel": "道具",
       "description": "法宝、兵器、丹药、信物",
       "icon": {
         "type": "builtin",
         "name": "package"
       },
       "color": "#f97316",
+      "entryLabel": "道具",
       "fields": [
         {
           "key": "name",
           "label": "名称",
           "type": "text",
           "required": true,
+          "options": [],
           "order": 0
         },
         {
           "key": "category",
           "label": "类别",
           "type": "select",
+          "required": false,
           "options": [
             "兵器",
             "法宝",
@@ -387,6 +444,7 @@
           "key": "rank",
           "label": "品阶",
           "type": "select",
+          "required": false,
           "options": [
             "凡品",
             "灵品",
@@ -400,6 +458,8 @@
           "key": "note",
           "label": "说明",
           "type": "textarea",
+          "required": false,
+          "options": [],
           "order": 3
         }
       ],
@@ -409,25 +469,28 @@
     {
       "id": "mod__lW9D4Tst5",
       "name": "时间线",
-      "entryLabel": "事件",
       "description": "大事记、历史年表",
       "icon": {
         "type": "builtin",
         "name": "clock"
       },
       "color": "#64748b",
+      "entryLabel": "事件",
       "fields": [
         {
           "key": "event",
           "label": "事件",
           "type": "text",
           "required": true,
+          "options": [],
           "order": 0
         },
         {
           "key": "time",
           "label": "时间点",
           "type": "text",
+          "required": false,
+          "options": [],
           "placeholder": "如：青冥历 328 年",
           "order": 1
         },
@@ -435,12 +498,16 @@
           "key": "cast",
           "label": "关联角色",
           "type": "text",
+          "required": false,
+          "options": [],
           "order": 2
         },
         {
           "key": "brief",
           "label": "简述",
           "type": "textarea",
+          "required": false,
+          "options": [],
           "order": 3
         }
       ],
