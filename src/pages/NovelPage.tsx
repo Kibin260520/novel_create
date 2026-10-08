@@ -292,7 +292,8 @@ export function NovelPage() {
         onCancel={() => setPendingDeleteNovel(false)}
         onConfirm={() => {
           setPendingDeleteNovel(false)
-          void deleteNovel(novelId).then(() => {
+          void deleteNovel(novelId).then((ok) => {
+            if (!ok) return
             toast.success(`已删除《${title}》`)
             navigate('/')
           })

@@ -191,7 +191,9 @@ export function HomePage() {
           const target = pendingDelete
           setPendingDelete(null)
           if (target) {
-            void deleteNovel(target.id).then(() => toast.success(`已删除《${target.title}》`))
+            void deleteNovel(target.id).then((ok) => {
+              if (ok) toast.success(`已删除《${target.title}》`)
+            })
           }
         }}
       />

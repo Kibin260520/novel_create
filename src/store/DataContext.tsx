@@ -20,7 +20,7 @@ import {
 } from '@/lib/dataSource'
 import { commitFiles, removeFile } from '@/lib/githubQueue'
 import { GitHubError } from '@/lib/github'
-import { KEYS, readJSON, writeJSON } from '@/lib/storage'
+import { KEYS, readJSON, removeKey, writeJSON } from '@/lib/storage'
 import { INDEX_FILE, novelFile, repoPath } from '@/lib/paths'
 import { newEntryId, newModuleId, newNovelId } from '@/lib/id'
 import { createDefaultModules } from '@/lib/defaultModules'
@@ -64,7 +64,8 @@ export interface DataApi {
 
   createNovel: (draft: NovelDraft) => Promise<Novel | null>
   updateNovel: (id: string, patch: Partial<Novel>) => Promise<void>
-  deleteNovel: (id: string) => Promise<void>
+  /** 返回是否真的删掉了（失败 / 数据未就绪时为 false，调用方据此决定要不要报成功） */
+  deleteNovel: (id: string) => Promise<boolean>
 
   createModule: (novelId: string, draft: ModuleDraft) => Promise<Module | null>
   updateModule: (novelId: string, moduleId: string, patch: Partial<Module>) => Promise<void>
@@ -124,6 +125,9 @@ export function DataProvider({ children }: { children: ReactNode }) {
     const { [id]: _drop, ...rest } = novelsRef.current
     novelsRef.current = rest
     setNovels(rest)
+    // 单本缓存也要一起清掉。只从内存里拿掉的话，这本书仍躺在 localStorage 里，
+    // 一旦后续被 loadNovel 读到（例如清单被旧数据覆盖回来），已删除的书就会复活。
+    removeKey(KEYS.cacheNovel(id))
   }, [])
 
   const setIndexLocal = useCallback((next: NovelIndex) => {
@@ -145,11 +149,14 @@ export function DataProvider({ children }: { children: ReactNode }) {
       }
       setSyncCount((n) => n + 1)
       try {
-        for (const d of deletes) {
-          await removeFile(ghConfig, d.path, d.message)
-        }
+        // 先写、后删。删除小说时「清单」是写在 files 里的，「小说文件」在 deletes 里，
+        // 顺序反过来会出现「文件已从仓库删掉、但清单里还留着这本书」的坏状态：
+        // 书架上点进去就是 404。先更清单则相反，最坏只是留一个没人引用的文件。
         if (files.length) {
           await commitFiles(ghConfig, files)
+        }
+        for (const d of deletes) {
+          await removeFile(ghConfig, d.path, d.message)
         }
         setLastError(null)
       } catch (e) {
@@ -243,6 +250,17 @@ export function DataProvider({ children }: { children: ReactNode }) {
         if (!cfg) return Promise.resolve(false)
         return readRawIndex(cfg, true)
           .then((data) => {
+            // 只往「更新」的方向走 —— 这条规矩对 index 同样成立。
+            //
+            // 远端不一定比本地新：改动提交是排队执行的（每次都要先 GET 拿 sha，
+            // 国内网络下一次要几十秒），用户点完「新增 / 删除」就刷新页面时，
+            // 那一笔很可能还没写进仓库；即使写进去了，raw 也可能还挂着上一版。
+            // 此时若拿它覆盖本地，就会出现「刚删掉的书刷新又回来」「刚新增的书
+            // 刷新就消失」——实测仓库里就发生过：新增《第一本小说》成功提交，
+            // 紧接着删另一本书时用落后一版的 index 做基准，把《第一本小说》
+            // 从清单里一并抹掉了（文件还在仓库，但书架不再显示它）。
+            const cur = indexRef.current
+            if (cur && data.updatedAt < cur.updatedAt) return false
             applyIndex(data, 'raw')
             return true
           })
@@ -395,7 +413,14 @@ export function DataProvider({ children }: { children: ReactNode }) {
         updatedAt: new Date().toISOString(),
         modules: createDefaultModules(),
       }
-      const prevIndex = indexRef.current ?? R.emptyIndex()
+      // 清单必须以「仓库里已有的清单」为基准。以前这里用 `?? R.emptyIndex()` 兜底，
+      // 一旦 index 尚未加载完就此操作，等于拿一个空清单去覆盖 index.json，
+      // 书架上原有的书会被一次性清空 —— 宁可让用户等一秒重试。
+      const prevIndex = indexRef.current
+      if (!prevIndex) {
+        toast.error('数据还没加载完，请稍候重试')
+        return null
+      }
       const nextIndex = R.indexUpsert(prevIndex, novel)
 
       mutateGen.current += 1
@@ -444,33 +469,44 @@ export function DataProvider({ children }: { children: ReactNode }) {
   )
 
   const deleteNovel = useCallback(
-    async (id: string) => {
+    async (id: string): Promise<boolean> => {
       const prev = novelsRef.current[id]
       const prevIndex = indexRef.current
-      const title = prev?.title ?? prevIndex?.novels.find((n) => n.id === id)?.title ?? id
-      const nextIndex = prevIndex ? R.indexRemove(prevIndex, id) : undefined
+      // 清单是书架的来源，也是「要不要删文件」的依据。拿不到就先别动手。
+      if (!prevIndex) {
+        toast.error('数据还没加载完，请稍候重试')
+        return false
+      }
+
+      const summary = prevIndex.novels.find((n) => n.id === id)
+      const title = prev?.title ?? summary?.title ?? id
+      // 以清单里记录的 file 为准：手写或历史数据的文件名未必等于 novels/<id>.json。
+      // 用 novelFile(id) 硬拼会指向一个不存在的路径，而 removeFile 对「文件不存在」
+      // 是静默放行的 —— 于是显示「删除成功」，仓库里的文件却原封不动。
+      const file = summary?.file || novelFile(id)
+      const nextIndex = R.indexRemove(prevIndex, id)
 
       mutateGen.current += 1
       removeNovelLocal(id)
-      if (nextIndex) setIndexLocal(nextIndex)
+      setIndexLocal(nextIndex)
 
       try {
         await runCommit(
-          nextIndex
-            ? [
-                {
-                  path: repoPath(INDEX_FILE),
-                  content: stringifyJson(nextIndex),
-                  message: `chore(data): 小说清单移除《${title}》`,
-                },
-              ]
-            : [],
-          [{ path: repoPath(novelFile(id)), message: `chore(data): 删除小说《${title}》` }]
+          [
+            {
+              path: repoPath(INDEX_FILE),
+              content: stringifyJson(nextIndex),
+              message: `chore(data): 小说清单移除《${title}》`,
+            },
+          ],
+          [{ path: repoPath(file), message: `chore(data): 删除小说《${title}》` }]
         )
+        return true
       } catch (e) {
         if (prev) setNovelLocal(prev)
-        if (prevIndex) setIndexLocal(prevIndex)
+        setIndexLocal(prevIndex)
         toast.error(`删除失败：${(e as Error).message}`)
+        return false
       }
     },
     [runCommit, removeNovelLocal, setIndexLocal, setNovelLocal, toast]
