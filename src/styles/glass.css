@@ -936,3 +936,116 @@
   flex-wrap: wrap;
   margin-bottom: var(--sp-4);
 }
+
+/* ---------------- 登录页 ---------------- */
+.auth-page {
+  position: relative;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: clamp(20px, 5vw, 56px) clamp(16px, 4vw, 32px);
+}
+.auth-theme {
+  position: absolute;
+  top: clamp(14px, 2.4vw, 24px);
+  right: clamp(14px, 2.4vw, 24px);
+}
+.auth-card {
+  width: 100%;
+  max-width: 452px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  padding: clamp(22px, 3.4vw, 34px);
+}
+.auth-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.auth-mark {
+  width: 42px;
+  height: 42px;
+  flex: none;
+  border-radius: 13px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  box-shadow: var(--sh-accent);
+  color: #fff;
+}
+.auth-head h1 {
+  font-size: 19px;
+  margin: 0;
+}
+.auth-sub {
+  margin: 3px 0 0;
+  font-size: 13px;
+  color: var(--text-3);
+}
+.auth-card .auth-fields .field:last-child {
+  margin-bottom: 0;
+}
+.auth-card .field-hint {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.auth-submit {
+  width: 100%;
+  justify-content: center;
+  padding: 11px 16px;
+  font-size: 14.5px;
+}
+.auth-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+  font-size: 12.5px;
+  color: var(--text-3);
+}
+.auth-foot a {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--accent-strong);
+  font-weight: 600;
+}
+.auth-help {
+  border-top: 1px solid var(--line);
+  padding-top: var(--sp-3);
+  font-size: 13px;
+  color: var(--text-2);
+}
+.auth-help summary {
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-2);
+  list-style: none;
+}
+.auth-help summary::marker,
+.auth-help summary::-webkit-details-marker {
+  display: none;
+}
+.auth-help summary::before {
+  content: '＋ ';
+  color: var(--accent-strong);
+  font-weight: 700;
+}
+.auth-help[open] summary::before {
+  content: '－ ';
+}
+.auth-help ol {
+  margin: var(--sp-3) 0 var(--sp-2);
+  padding-left: 20px;
+  line-height: 1.9;
+  font-size: 12.5px;
+}
+.auth-help p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.65;
+}

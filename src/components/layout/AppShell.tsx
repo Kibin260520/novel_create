@@ -1,12 +1,20 @@
 import { Link, Outlet, useNavigate } from 'react-router-dom'
 import { useSettings } from '@/store/SettingsContext'
 import { useData } from '@/store/DataContext'
+import { useToast } from '@/components/common/Toast'
 import { UiIcon } from '@/components/icons/UiIcon'
 
 export function AppShell() {
-  const { theme, toggleTheme } = useSettings()
-  const { syncing, canWrite, isConfigured } = useData()
+  const { theme, toggleTheme, settings, logout } = useSettings()
+  const { syncing } = useData()
+  const toast = useToast()
   const navigate = useNavigate()
+
+  const doLogout = () => {
+    logout()
+    toast.info('已退出登录，凭据已从本机清除')
+    navigate('/login', { replace: true })
+  }
 
   return (
     <div className="app-shell">
@@ -21,21 +29,17 @@ export function AppShell() {
         <div className="header-actions">
           <span
             className="chip is-plain"
-            title={
-              canWrite
-                ? '已连接仓库，改动会自动提交到 GitHub'
-                : isConfigured
-                  ? '已配置仓库但缺少 Token，改动仅保存在本机'
-                  : '未配置仓库，改动仅保存在本机'
-            }
-            style={{ cursor: 'default' }}
+            title={`已连接 ${settings.owner}/${settings.repo}@${settings.branch}，改动会提交到该仓库`}
+            style={{ cursor: 'default', maxWidth: 260 }}
           >
             <UiIcon
-              name={syncing ? 'loader' : canWrite ? 'cloud' : 'cloudOff'}
+              name={syncing ? 'loader' : 'cloud'}
               size={14}
               className={syncing ? 'spin' : undefined}
             />
-            {syncing ? '提交中…' : canWrite ? '已连接仓库' : '仅本机'}
+            <span className="clamp-1">
+              {syncing ? '提交中…' : `${settings.owner}/${settings.repo}`}
+            </span>
           </span>
 
           <button
@@ -52,6 +56,10 @@ export function AppShell() {
             title="设置"
           >
             <UiIcon name="settings" size={18} />
+          </button>
+
+          <button className="btn btn-icon btn-ghost" onClick={doLogout} title="退出登录">
+            <UiIcon name="logout" size={18} />
           </button>
         </div>
       </header>

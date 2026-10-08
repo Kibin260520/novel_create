@@ -17,6 +17,7 @@ import {
   type SourceKind,
 } from '@/lib/dataSource'
 import { commitFiles, removeFile } from '@/lib/githubQueue'
+import { GitHubError } from '@/lib/github'
 import { KEYS, readJSON, writeJSON } from '@/lib/storage'
 import { INDEX_FILE, novelFile, repoPath } from '@/lib/paths'
 import { newEntryId, newModuleId, newNovelId } from '@/lib/id'
@@ -86,7 +87,7 @@ export interface DataApi {
 const DataContext = createContext<DataApi | null>(null)
 
 export function DataProvider({ children }: { children: ReactNode }) {
-  const { ghConfig, canWrite, isConfigured } = useSettings()
+  const { ghConfig, canWrite, isConfigured, isAuthenticated, logout } = useSettings()
   const toast = useToast()
 
   const [index, setIndex] = useState<NovelIndex | null>(null)
@@ -140,11 +141,20 @@ export function DataProvider({ children }: { children: ReactNode }) {
           await commitFiles(ghConfig, files)
         }
         setLastError(null)
+      } catch (e) {
+        // 凭据失效（Token 过期 / 被撤销 / 权限被收回）：直接登出并提示重新登录。
+        // 否则每次提交都失败，用户却看不出根因。
+        if (e instanceof GitHubError && (e.status === 401 || e.status === 403)) {
+          setLastError(e.message)
+          logout({ keepIdentity: true })
+          toast.error(`登录已失效：${e.message}，请重新登录后再试`)
+        }
+        throw e
       } finally {
         setSyncCount((n) => Math.max(0, n - 1))
       }
     },
-    [canWrite, ghConfig, toast]
+    [canWrite, ghConfig, logout, toast]
   )
 
   interface MutateOpts {
@@ -222,14 +232,29 @@ export function DataProvider({ children }: { children: ReactNode }) {
     [ghConfig, isConfigured, canWrite, setIndexLocal, toast]
   )
 
-  // 首次挂载拉取一次；之后由设置页手动刷新，避免边输入配置边发请求
+  /**
+   * 登录成功后再拉数据（严格模式下未登录看不到内容）。
+   * 登出时清空内存数据与引导标记，下次登录会重新拉取。
+   */
   const bootstrapped = useRef(false)
   useEffect(() => {
+    if (!isAuthenticated) {
+      // 登出：清掉内存中的数据，避免内容残留在页面上
+      novelsRef.current = {}
+      indexRef.current = null
+      setNovels({})
+      setIndex(null)
+      setLoadingNovel({})
+      setLoadingIndex(false)
+      setLastError(null)
+      bootstrapped.current = false
+      return
+    }
     if (bootstrapped.current) return
     bootstrapped.current = true
-    void refresh()
+    void refresh(true)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [isAuthenticated])
 
   const loadNovel = useCallback(
     async (id: string): Promise<Novel | null> => {
