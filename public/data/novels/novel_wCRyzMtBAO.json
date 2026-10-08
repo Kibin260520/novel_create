@@ -9,7 +9,7 @@
   ],
   "summary": "",
   "createdAt": "2026-10-08T07:38:27.693Z",
-  "updatedAt": "2026-10-08T07:59:51.718Z",
+  "updatedAt": "2026-10-08T08:13:22.752Z",
   "modules": [
     {
       "id": "mod_4EsFz1keH6",
@@ -234,7 +234,19 @@
           "order": 3
         }
       ],
-      "entries": [],
+      "entries": [
+        {
+          "id": "ent_hiii5cFcxp",
+          "createdAt": "2026-10-08T08:13:22.752Z",
+          "updatedAt": "2026-10-08T08:13:22.752Z",
+          "values": {
+            "name": "天雷赐罚"
+          },
+          "notes": "",
+          "tags": [],
+          "order": 0
+        }
+      ],
       "order": 3
     },
     {
