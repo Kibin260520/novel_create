@@ -1122,3 +1122,73 @@
   font-weight: 500;
   opacity: 0.72;
 }
+
+/* =========================================================
+   条目排序（拖拽换位 / 上移下移）
+   ========================================================= */
+.sortable-grid {
+  /* 拖动中的卡片要能浮在其它卡片上面，但不能盖住顶栏（顶栏 z-index 40） */
+  --sort-z: 30;
+}
+.sortable-item {
+  /* 用 grid 让卡片吃满格子高度，卡片高度仍由同一行的最高卡片决定 */
+  display: grid;
+  min-width: 0;
+}
+.sortable-item.is-dragging {
+  position: relative;
+  z-index: var(--sort-z);
+}
+.sortable-item.is-dragging .card {
+  box-shadow: var(--sh-3);
+  border-color: color-mix(in srgb, var(--card-color, var(--accent)) 55%, transparent);
+  opacity: 0.97;
+}
+/* 排序模式下关掉 hover 上浮：卡片正在跟手移动，再叠一层位移会打架 */
+.sortable-grid.is-sorting .card.is-clickable:hover,
+.sortable-grid.is-sorting .card.is-clickable:active {
+  transform: none;
+}
+
+/* 卡片左上角的拖拽手柄 */
+.sort-handle {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  margin: -4px 0 0 -6px;
+  border: 0;
+  border-radius: 9px;
+  background: none;
+  color: var(--text-3);
+  cursor: grab;
+  /* 手指按在手柄上时不要触发页面滚动，否则没法拖拽 */
+  touch-action: none;
+  transition: color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+.sort-handle:hover {
+  color: var(--text-1);
+  background: var(--glass-bg-strong);
+}
+.sort-handle:active {
+  cursor: grabbing;
+}
+
+.sort-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-2);
+}
+
+/* 拖动期间：抓手光标 + 禁止选中文字 */
+body.nc-dragging,
+body.nc-dragging * {
+  cursor: grabbing !important;
+}
+body.nc-dragging {
+  user-select: none;
+  -webkit-user-select: none;
+}

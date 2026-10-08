@@ -6,6 +6,7 @@ import { EntryForm } from '@/components/entry/EntryForm'
 import { EntryDetail } from '@/components/entry/EntryDetail'
 import { ModuleForm, type ModuleFormValue } from '@/components/module/ModuleForm'
 import { AddCard } from '@/components/common/AddCard'
+import { SortableGrid } from '@/components/common/SortableGrid'
 import { EmptyState } from '@/components/common/EmptyState'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 import { SvgIcon } from '@/components/icons/SvgIcon'
@@ -27,6 +28,7 @@ export function ModulePage() {
     createEntry,
     updateEntry,
     deleteEntry,
+    reorderEntries,
     updateModule,
     deleteModule,
   } = useData()
@@ -37,6 +39,8 @@ export function ModulePage() {
   const loading = !novel || loadingNovel[novelId] !== false
 
   const [query, setQuery] = useState('')
+  /** 整理顺序模式：进入后卡片可拖动，搜索框与「＋」先收起来，避免在筛选结果上排序 */
+  const [sorting, setSorting] = useState(false)
   const [entryFormOpen, setEntryFormOpen] = useState(false)
   const [editingEntry, setEditingEntry] = useState<Entry | null>(null)
   const [detailEntry, setDetailEntry] = useState<Entry | null>(null)
@@ -112,6 +116,9 @@ export function ModulePage() {
       return hay.includes(q)
     })
   }, [module, query, novel])
+
+  const entryIds = useMemo(() => entries.map((e) => e.id), [entries])
+  const entryById = useMemo(() => new Map(entries.map((e) => [e.id, e])), [entries])
 
   const label = module?.entryLabel || module?.name || '条目'
 
@@ -203,18 +210,45 @@ export function ModulePage() {
 
       {module.entries.length > 0 && (
         <div className="toolbar">
-          <div className="search">
-            <UiIcon name="search" size={16} />
-            <input
-              className="input"
-              placeholder={`搜索${label}…`}
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
-          </div>
-          <span className="muted" style={{ fontSize: 13 }}>
-            {query ? `匹配 ${entries.length} 条` : ''}
-          </span>
+          {sorting ? (
+            <>
+              <span className="sort-hint">
+                <UiIcon name="drag" size={15} />
+                按住卡片左上角的手柄拖动换位，也可以用 ↑ ↓ 微调；松手后自动保存
+              </span>
+              <span className="grow" />
+              <button className="btn btn-sm btn-primary" onClick={() => setSorting(false)}>
+                <UiIcon name="check" size={15} /> 完成
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="search">
+                <UiIcon name="search" size={16} />
+                <input
+                  className="input"
+                  placeholder={`搜索${label}…`}
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                />
+              </div>
+              <span className="muted" style={{ fontSize: 13 }}>
+                {query ? `匹配 ${entries.length} 条` : ''}
+              </span>
+              <span className="grow" />
+              {module.entries.length > 1 && (
+                <button
+                  className="btn btn-sm"
+                  onClick={() => {
+                    setQuery('')
+                    setSorting(true)
+                  }}
+                >
+                  <UiIcon name="sort" size={15} /> 整理顺序
+                </button>
+              )}
+            </>
+          )}
         </div>
       )}
 
@@ -247,31 +281,45 @@ export function ModulePage() {
           }
         />
       ) : (
-        <div className="grid">
-          {entries.map((e) => (
-            <EntryCard
-              key={e.id}
-              module={module}
-              entry={e}
-              novel={novel}
-              onOpen={() => setDetailEntry(e)}
-              onEdit={() => {
-                setEditingEntry(e)
-                setEntryFormOpen(true)
-              }}
-              onDelete={() => setPendingDelete(e)}
-            />
-          ))}
-          {!query && (
-            <AddCard
-              label={`新增${label}`}
-              onClick={() => {
-                setEditingEntry(null)
-                setEntryFormOpen(true)
-              }}
-            />
-          )}
-        </div>
+        <SortableGrid
+          ids={entryIds}
+          enabled={sorting}
+          onReorder={(next) =>
+            void reorderEntries(novelId, moduleId, next).catch((e: unknown) => {
+              // 失败时数据已回滚、卡片会自己弹回原位，这里补一句说明
+              toast.error(`顺序保存失败：${(e as Error)?.message ?? '未知错误'}`)
+            })
+          }
+          renderItem={(id, ctx) => {
+            const e = entryById.get(id)
+            if (!e) return null
+            return (
+              <EntryCard
+                module={module}
+                entry={e}
+                novel={novel}
+                sort={sorting ? ctx : undefined}
+                onOpen={() => setDetailEntry(e)}
+                onEdit={() => {
+                  setEditingEntry(e)
+                  setEntryFormOpen(true)
+                }}
+                onDelete={() => setPendingDelete(e)}
+              />
+            )
+          }}
+          footer={
+            !query && !sorting ? (
+              <AddCard
+                label={`新增${label}`}
+                onClick={() => {
+                  setEditingEntry(null)
+                  setEntryFormOpen(true)
+                }}
+              />
+            ) : null
+          }
+        />
       )}
 
       {query && entries.length === 0 && (

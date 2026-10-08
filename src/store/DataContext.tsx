@@ -84,7 +84,8 @@ export interface DataApi {
     patch: Partial<Entry>
   ) => Promise<void>
   deleteEntry: (novelId: string, moduleId: string, entryId: string) => Promise<void>
-  moveEntry: (novelId: string, moduleId: string, entryId: string, delta: number) => Promise<void>
+  /** 按给定的 id 顺序重排条目（拖拽 / 上移下移都走这里） */
+  reorderEntries: (novelId: string, moduleId: string, orderedIds: string[]) => Promise<void>
 }
 
 const DataContext = createContext<DataApi | null>(null)
@@ -597,13 +598,15 @@ export function DataProvider({ children }: { children: ReactNode }) {
     [mutateNovel]
   )
 
-  const moveEntry = useCallback(
-    async (novelId: string, moduleId: string, entryId: string, delta: number) => {
+  const reorderEntries = useCallback(
+    async (novelId: string, moduleId: string, orderedIds: string[]) => {
       const novel = novelsRef.current[novelId]
       if (!novel) return
-      const next = R.moveEntry(novel, moduleId, entryId, delta)
+      const next = R.reorderEntries(novel, moduleId, orderedIds)
+      // 顺序没变就不提交，避免留下一个什么都没改的 commit
       if (next === novel) return
-      await mutateNovel(next, `chore(data): 调整条目顺序`, { prev: novel })
+      const label = novel.modules.find((m) => m.id === moduleId)?.entryLabel ?? '条目'
+      await mutateNovel(next, `chore(data): 调整《${novel.title}》${label}顺序`, { prev: novel })
     },
     [mutateNovel]
   )
@@ -634,7 +637,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       createEntry,
       updateEntry,
       deleteEntry,
-      moveEntry,
+      reorderEntries,
     }),
     [
       index,
@@ -661,7 +664,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       createEntry,
       updateEntry,
       deleteEntry,
-      moveEntry,
+      reorderEntries,
     ]
   )
 

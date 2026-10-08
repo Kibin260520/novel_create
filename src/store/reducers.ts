@@ -98,18 +98,41 @@ export function dropEntry(n: Novel, moduleId: string, entryId: string): Novel {
   })
 }
 
-export function moveEntry(n: Novel, moduleId: string, entryId: string, delta: number): Novel {
+/**
+ * 按给定的 id 顺序重排条目。
+ *
+ * 容错原则：只认确实属于这个模块的 id，重复的忽略；列表里没提到的条目
+ * **按原顺序接在后面**，绝不因为一次排序而把数据弄丢（比如排序期间别处
+ * 刚加了一条）。顺序没有实际变化时返回原对象，避免产生一个空提交。
+ */
+export function reorderEntries(n: Novel, moduleId: string, orderedIds: string[]): Novel {
+  const mod = n.modules.find((m) => m.id === moduleId)
+  if (!mod) return n
+
+  const current = [...mod.entries].sort((a, b) => a.order - b.order)
+  const byId = new Map(current.map((e) => [e.id, e]))
+  const next: Entry[] = []
+  const used = new Set<string>()
+
+  for (const id of orderedIds) {
+    const e = byId.get(id)
+    if (!e || used.has(id)) continue
+    used.add(id)
+    next.push(e)
+  }
+  for (const e of current) {
+    if (!used.has(e.id)) next.push(e)
+  }
+
+  if (next.every((e, i) => e.id === current[i].id)) return n
+
   return touch({
     ...n,
-    modules: n.modules.map((m) => {
-      if (m.id !== moduleId) return m
-      const list = [...m.entries].sort((a, b) => a.order - b.order)
-      const i = list.findIndex((e) => e.id === entryId)
-      const j = i + delta
-      if (i < 0 || j < 0 || j >= list.length) return m
-      ;[list[i], list[j]] = [list[j], list[i]]
-      return { ...m, entries: list.map((e, idx) => ({ ...e, order: idx })) }
-    }),
+    modules: n.modules.map((m) =>
+      m.id === moduleId
+        ? { ...m, entries: next.map((e, i) => (e.order === i ? e : { ...e, order: i })) }
+        : m
+    ),
   })
 }
 

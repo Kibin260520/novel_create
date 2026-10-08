@@ -4,6 +4,16 @@ import { displayValue } from '@/lib/refs'
 import { colorWithAlpha } from '@/lib/palette'
 import type { Entry, Module, Novel } from '@/types/data'
 
+/** 排序模式下卡片额外需要的东西（由 SortableGrid 提供） */
+export interface EntrySortProps {
+  handleProps: { onPointerDown: (e: React.PointerEvent<HTMLElement>) => void }
+  index: number
+  total: number
+  isDragging: boolean
+  moveUp: () => void
+  moveDown: () => void
+}
+
 interface Props {
   module: Module
   entry: Entry
@@ -12,9 +22,11 @@ interface Props {
   onOpen: () => void
   onEdit: () => void
   onDelete: () => void
+  /** 传入即进入排序模式：显示拖拽手柄与上移下移，编辑/删除按钮让位 */
+  sort?: EntrySortProps
 }
 
-export function EntryCard({ module, entry, novel, onOpen, onEdit, onDelete }: Props) {
+export function EntryCard({ module, entry, novel, onOpen, onEdit, onDelete, sort }: Props) {
   const color = module.color || '#6366f1'
   const fields = [...module.fields].sort((a, b) => a.order - b.order)
 
@@ -43,7 +55,7 @@ export function EntryCard({ module, entry, novel, onOpen, onEdit, onDelete }: Pr
 
   return (
     <article
-      className="card glass is-clickable"
+      className={`card glass is-clickable${sort ? ' is-sorting' : ''}`}
       style={{ ['--card-color' as string]: color, minHeight: 132 }}
       onClick={onOpen}
       role="link"
@@ -53,19 +65,57 @@ export function EntryCard({ module, entry, novel, onOpen, onEdit, onDelete }: Pr
       <span className="card-accent" />
 
       <div className="card-top">
+        {sort && (
+          <button
+            type="button"
+            className="sort-handle"
+            title="按住拖动排序"
+            aria-label="按住拖动排序"
+            {...sort.handleProps}
+            // 手柄在卡片内部，别让点击冒泡出去把详情弹窗打开
+            onClick={(e) => e.stopPropagation()}
+          >
+            <UiIcon name="drag" size={16} />
+          </button>
+        )}
+
         <div className="grow" style={{ minWidth: 0 }}>
           <div className="card-title clamp-1" style={{ fontFamily: 'var(--font-serif)' }}>
             {title}
           </div>
         </div>
-        <div className="row gap-1" onClick={(e) => e.stopPropagation()}>
-          <button className="btn btn-icon btn-sm btn-ghost" title="编辑" onClick={onEdit}>
-            <UiIcon name="edit" size={15} />
-          </button>
-          <button className="btn btn-icon btn-sm btn-ghost" title="删除" onClick={onDelete}>
-            <UiIcon name="trash" size={15} />
-          </button>
-        </div>
+
+        {sort ? (
+          <div className="row gap-1" onClick={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              className="btn btn-icon btn-sm btn-ghost"
+              title="上移一位"
+              disabled={sort.index === 0}
+              onClick={sort.moveUp}
+            >
+              <UiIcon name="arrowUp" size={15} />
+            </button>
+            <button
+              type="button"
+              className="btn btn-icon btn-sm btn-ghost"
+              title="下移一位"
+              disabled={sort.index >= sort.total - 1}
+              onClick={sort.moveDown}
+            >
+              <UiIcon name="arrowDown" size={15} />
+            </button>
+          </div>
+        ) : (
+          <div className="row gap-1" onClick={(e) => e.stopPropagation()}>
+            <button className="btn btn-icon btn-sm btn-ghost" title="编辑" onClick={onEdit}>
+              <UiIcon name="edit" size={15} />
+            </button>
+            <button className="btn btn-icon btn-sm btn-ghost" title="删除" onClick={onDelete}>
+              <UiIcon name="trash" size={15} />
+            </button>
+          </div>
+        )}
       </div>
 
       {rest.length > 0 && (
