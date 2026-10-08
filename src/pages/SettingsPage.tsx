@@ -130,12 +130,25 @@ export function SettingsPage() {
                 : canWrite
                   ? '已连接仓库，改动会自动提交'
                   : '未连接仓库'}
-              {source && ` · 数据来源：${source === 'raw' ? 'GitHub 实时数据' : '项目内置副本'}`}
+              {source &&
+                ` · 数据来源：${
+                  source === 'raw'
+                    ? 'GitHub 实时数据'
+                    : source === 'cache'
+                      ? '本机缓存'
+                      : '项目内置副本'
+                }`}
               {index && ` · ${index.novels.length} 本小说`}
             </div>
             <button
               className="btn"
-              onClick={() => void refresh(true).then(() => toast.success('已从远端重新拉取数据'))}
+              onClick={() =>
+                void refresh(true).then((ok) =>
+                  ok
+                    ? toast.success('已从远端同步最新数据')
+                    : toast.info('远端暂时不可达，当前显示的是本机已有数据')
+                )
+              }
             >
               <UiIcon name="refresh" size={16} /> 从远端重新拉取
             </button>

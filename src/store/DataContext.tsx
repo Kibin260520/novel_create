@@ -11,8 +11,10 @@ import {
 import { useSettings } from './SettingsContext'
 import { useToast } from '@/components/common/Toast'
 import {
-  fetchIndex,
-  fetchNovel,
+  readBundledIndex,
+  readBundledNovel,
+  readRawIndex,
+  readRawNovel,
   stringifyJson,
   type SourceKind,
 } from '@/lib/dataSource'
@@ -54,7 +56,8 @@ export interface DataApi {
   canWrite: boolean
   isConfigured: boolean
 
-  refresh: (force?: boolean) => Promise<void>
+  /** 刷新数据；返回「这次远端刷新是否真的拿到了数据」 */
+  refresh: (force?: boolean) => Promise<boolean>
   getNovel: (id: string) => Novel | undefined
   getSummary: (id: string) => NovelSummary | undefined
   loadNovel: (id: string) => Promise<Novel | null>
@@ -102,6 +105,13 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const novelsRef = useRef<Record<string, Novel>>({})
   const indexRef = useRef<NovelIndex | null>(null)
   const notifiedLocalOnly = useRef(false)
+  /**
+   * 本地改动代次。每次用户增删改都会 +1。
+   *
+   * 后台从远端回填数据是异步的，期间用户可能刚好改了一笔；
+   * 回填前对比代次，不一致就丢弃这份远端结果，否则会把刚改的内容冲掉。
+   */
+  const mutateGen = useRef(0)
 
   const setNovelLocal = useCallback((n: Novel) => {
     novelsRef.current = { ...novelsRef.current, [n.id]: n }
@@ -168,6 +178,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const mutateNovel = useCallback(
     async (next: Novel, message: string, opts: MutateOpts) => {
       // 1) 乐观更新
+      mutateGen.current += 1
       setNovelLocal(next)
       if (opts.nextIndex) setIndexLocal(opts.nextIndex)
 
@@ -199,32 +210,73 @@ export function DataProvider({ children }: { children: ReactNode }) {
   /* ---------------- 加载 ---------------- */
 
   /**
-   * 拉取小说清单。
-   * 未配置写入（无 Token）时以「本机缓存」优先，避免把本机改动覆盖掉；
-   * 传 force = true 可强制从远端重新拉取（会丢弃本机改动）。
+   * 拉取小说清单。顺序：本机缓存 → 打包副本 → 远端。
+   *
+   * 前两步都是本地读取，毫秒级返回，先把页面填上；远端放后台拉，
+   * 拿到更新的数据再覆盖。这样 raw 超时（国内很常见）也不会让首屏干等，
+   * 而且远端不可达时保留的是本地数据、不会倒退成更旧的副本。
+   *
+   * 未配置写入（无 Token）时以「本机缓存」为准，避免把未提交的改动覆盖掉；
+   * 传 force = true 表示以远端为准（本机未提交的改动会被丢弃）。
+   *
+   * 返回值表示这次远端刷新**是否真的拿到了数据**：页面渲染不等它，
+   * 但「从远端重新拉取」这类按钮需要它来决定提示文案 —— 否则远端还没回来
+   * （或者压根不可达）就报「已同步」，等于骗人。
    */
   const refresh = useCallback(
-    async (force = false) => {
+    async (force = false): Promise<boolean> => {
       setLoadingIndex(true)
       setError(null)
-      try {
-        const cached = readJSON<NovelIndex | null>(KEYS.cacheIndex, null)
-        if (cached) setIndexLocal(cached)
 
-        if (!force && !canWrite && cached) {
-          // 本机优先：不覆盖未提交的本地改动
-          return
+      const gen = mutateGen.current
+      /** 代次变了说明期间用户改过数据，这份远端结果已过期，必须丢弃 */
+      const applyIndex = (data: NovelIndex, src: SourceKind) => {
+        if (mutateGen.current !== gen) return
+        setIndexLocal(data)
+        setSource(src)
+      }
+
+      const cfg = isConfigured ? ghConfig : null
+
+      const revalidate = (): Promise<boolean> => {
+        if (!cfg) return Promise.resolve(false)
+        return readRawIndex(cfg, true)
+          .then((data) => {
+            applyIndex(data, 'raw')
+            return true
+          })
+          .catch(() => {
+            /* 远端不可达：保留本地数据，绝不回退成更旧的副本 */
+            return false
+          })
+      }
+
+      try {
+        // ① 本机缓存：秒开，且可能含着尚未提交到仓库的改动
+        const cached = readJSON<NovelIndex | null>(KEYS.cacheIndex, null)
+        if (cached) applyIndex(cached, 'cache')
+
+        // ② 只读凭据 + 有本机缓存 → 以本机为准，不去打扰远端
+        if (!force && !canWrite && cached) return false
+
+        // ③ 连缓存都没有，用打包副本顶上
+        if (!indexRef.current) {
+          const bundled = await readBundledIndex()
+          if (bundled) applyIndex(bundled, 'bundled')
         }
 
-        const r = await fetchIndex(isConfigured ? ghConfig : null, true)
-        setIndexLocal(r.data)
-        setSource(r.source)
+        // ④ 本地已有内容 → 先撤掉加载态把页面渲染出来，再等远端
+        if (indexRef.current) setLoadingIndex(false)
+
+        // ⑤ 本地彻底没有内容时只能等远端，否则页面上什么都显示不出来
+        return await revalidate()
       } catch (e) {
         const msg = (e as Error).message
         setError(msg)
         if (!indexRef.current) {
           toast.error(`读取数据失败：${msg}`)
         }
+        return false
       } finally {
         setLoadingIndex(false)
       }
@@ -261,24 +313,51 @@ export function DataProvider({ children }: { children: ReactNode }) {
       if (novelsRef.current[id]) return novelsRef.current[id]
       setLoadingNovel((s) => ({ ...s, [id]: true }))
 
-      // 先上缓存，秒开
-      const cached = readJSON<Novel | null>(KEYS.cacheNovel(id), null)
-      if (cached && cached.id === id) {
-        setNovelLocal(cached)
-        // 未配置写入时以本机为准，避免未提交的改动被远端覆盖
-        if (!canWrite) {
-          setLoadingNovel((s) => ({ ...s, [id]: false }))
-          return cached
-        }
+      const gen = mutateGen.current
+      const summary = indexRef.current?.novels.find((n) => n.id === id)
+      const file = summary?.file || novelFile(id)
+      const cfg = isConfigured ? ghConfig : null
+
+      const applyNovel = (data: Novel, src: SourceKind) => {
+        // 代次变了 = 用户期间改过这本书，丢弃这份远端结果
+        if (mutateGen.current !== gen) return
+        const cur = novelsRef.current[id]
+        // 手上这份比远端新（例如本机缓存晚于打包副本），别用旧的覆盖
+        if (cur && cur.updatedAt > data.updatedAt) return
+        setNovelLocal(data)
+        setSource(src)
       }
 
       try {
-        const summary = indexRef.current?.novels.find((n) => n.id === id)
-        const file = summary?.file || novelFile(id)
-        const r = await fetchNovel(isConfigured ? ghConfig : null, file, id, true)
-        setNovelLocal(r.data)
-        setSource(r.source)
-        return r.data
+        // ① 本机缓存：可能含着尚未提交到仓库的改动
+        const cached = readJSON<Novel | null>(KEYS.cacheNovel(id), null)
+        if (cached && cached.id === id) {
+          applyNovel(cached, 'cache')
+          // 只读凭据：以本机为准，避免未提交的改动被远端覆盖
+          if (!canWrite) return novelsRef.current[id] ?? cached
+        }
+
+        // ② 打包副本（本地，毫秒级）。只在本机没有这本书时才用它顶上 ——
+        // 缓存可能比打包副本更新（刚提交、部署还没跑完），不能倒着覆盖。
+        if (!novelsRef.current[id]) {
+          const bundled = await readBundledNovel(file, id)
+          if (bundled) applyNovel(bundled, 'bundled')
+        }
+
+        if (!cfg) return novelsRef.current[id] ?? null
+
+        // ③ 远端：本地有货就后台刷新；本地彻底没有才等它，
+        //    否则会先闪一下「不存在」再出现内容
+        if (novelsRef.current[id]) {
+          void readRawNovel(cfg, file, id, true)
+            .then((data) => applyNovel(data, 'raw'))
+            .catch(() => {
+              /* 远端不可达：保留本地数据 */
+            })
+        } else {
+          applyNovel(await readRawNovel(cfg, file, id, true), 'raw')
+        }
+        return novelsRef.current[id] ?? null
       } catch (e) {
         const msg = (e as Error).message
         if (!novelsRef.current[id]) {
@@ -318,6 +397,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       const prevIndex = indexRef.current ?? R.emptyIndex()
       const nextIndex = R.indexUpsert(prevIndex, novel)
 
+      mutateGen.current += 1
       setNovelLocal(novel)
       setIndexLocal(nextIndex)
 
@@ -369,6 +449,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       const title = prev?.title ?? prevIndex?.novels.find((n) => n.id === id)?.title ?? id
       const nextIndex = prevIndex ? R.indexRemove(prevIndex, id) : undefined
 
+      mutateGen.current += 1
       removeNovelLocal(id)
       if (nextIndex) setIndexLocal(nextIndex)
 
