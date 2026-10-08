@@ -161,7 +161,7 @@ export async function ghTest(cfg: GitHubConfig): Promise<{ ok: boolean; message:
 export interface GhVerifyResult {
   ok: boolean
   message: string
-  /** 仓库是否可写（permissions.push） */
+  /** 仓库是否可写（由真实写探针确认，非推断） */
   canWrite?: boolean
   /** 仓库里是否存在数据目录（public/data/index.json） */
   dataPathExists?: boolean
@@ -172,16 +172,46 @@ export interface GhVerifyResult {
 }
 
 /**
- * 登录校验：一次请求拿到「能不能进、能不能写、找不找得到数据目录」三个结论。
+ * 写能力探针：POST 一个极小的 blob 到对象库。
  *
- * 1) GET /repos/{owner}/{repo} —— 仓库可达性 + `permissions.push` 写权限；
- *    公开仓库用只读 Token 也能读到该接口，此时 push 为 false，据此给出明确提示。
+ * 为什么不看 `GET /repos/{owner}/{repo}` 返回的 `permissions.push`？
+ * 因为那是**当前账号在该仓库的角色权限**，与 Token 被授予的范围无关。
+ * 实测（本仓库 owner 账号的 fine-grained Token 未勾选 Contents:write）：
+ *   permissions = { admin: true, maintain: true, push: true, ... }  ← 全是 true
+ *   而 POST /git/blobs → 403 "Resource not accessible by personal access token"
+ * 即：公开仓库的元数据读取和内容读取对任何 fine-grained Token 都默认放行，
+ * 靠 permissions 判写权限会**把没写权限的人放进门**，然后每次保存才失败。
+ *
+ * 该探针只往对象库写一个游离对象（dangling blob），**不产生 commit、不改动任何分支**，
+ * 对仓库内容与历史零影响，会被 GitHub 自动回收，是目前唯一无损的写权限判定方式。
+ */
+async function probeWriteAccess(cfg: GitHubConfig): Promise<{ ok: boolean; status: number; message?: string }> {
+  try {
+    const res = await fetch(`${API}/repos/${cfg.owner}/${cfg.repo}/git/blobs`, {
+      method: 'POST',
+      headers: { ...headers(cfg.token), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: 'novel-collection write probe', encoding: 'utf-8' }),
+    })
+    if (res.ok) return { ok: true, status: res.status }
+    const detail = await res
+      .json()
+      .then((d: { message?: string }) => d?.message)
+      .catch(() => undefined)
+    return { ok: false, status: res.status, message: detail }
+  } catch (e) {
+    return { ok: false, status: 0, message: (e as Error).message }
+  }
+}
+
+/**
+ * 登录校验：拿到「能不能进、能不能写、找不找得到数据目录」三个结论。
+ *
+ * 1) GET /repos/{owner}/{repo} —— 仓库可达性、默认分支、公开/私有；
  * 2) 试读 public/data/index.json —— 确认这就是一个「小说资料库」仓库，
- *    避免用户把仓库名填错却一路绿灯、直到第一次提交才发现。
+ *    避免用户把仓库名填错却一路绿灯、直到第一次提交才发现；
+ * 3) 真实写探针 —— 见 probeWriteAccess，确认 Token 确实具备 Contents: 写权限。
  *
  * 返回 dataPathExists === true 且 canWrite === true 才算真正可用。
- * 注意：写权限这里只能靠 permissions 字段「推断」，GitHub 没有无损的写能力探测接口；
- * 万一推断与实际不符，首次提交失败时前端会自动登出并提示重新登录。
  */
 export async function ghVerify(cfg: GitHubConfig): Promise<GhVerifyResult> {
   if (!cfg.owner || !cfg.repo) {
@@ -195,7 +225,8 @@ export async function ghVerify(cfg: GitHubConfig): Promise<GhVerifyResult> {
     full_name?: string
     private?: boolean
     default_branch?: string
-    permissions?: { admin?: boolean; maintain?: boolean; push?: boolean; pull?: boolean }
+    // 注意：响应里的 permissions 字段是「账号在该仓库的角色」，不代表 Token 授予范围，
+    // 不能用它判定写权限，故此处不接收。
   }
 
   try {
@@ -221,25 +252,31 @@ export async function ghVerify(cfg: GitHubConfig): Promise<GhVerifyResult> {
 
   const fullName = repo.full_name ?? `${cfg.owner}/${cfg.repo}`
   const flags = repo.private ? '私有' : '公开'
-  const perms = repo.permissions
-  /**
-   * 写权限判定。
-   * GitHub 只在带 Token 鉴权的请求里返回 permissions：
-   * - 未带 Token 访问公开仓库时，permissions 为 undefined（已实测）；
-   * - 带 Token 时才有 { admin, maintain, push, pull }。
-   * 于是分两种情形：能看到 permissions 就直接判定；看不到就不下结论（宁可放行并提示，
-   * 也不要把有写权限的人误挡在门外），真提交失败时再由 401/403 兜底。
-   */
-  const permsKnown = !!perms
-  const writeAllowed = !perms || !!(perms.push || perms.admin || perms.maintain)
+  const branch = repo.default_branch ?? 'main'
 
-  if (permsKnown && !writeAllowed) {
+  // 真实写探针：只有它才能判定 Token 的写权限，permissions 字段不可信（见 probeWriteAccess）
+  const probe = await probeWriteAccess(cfg)
+  if (!probe.ok) {
+    if (probe.status === 401) {
+      return {
+        ok: false,
+        canWrite: false,
+        fullName,
+        defaultBranch: branch,
+        message: 'Token 无效或已过期（401），请到 GitHub 重新生成',
+      }
+    }
+    const isRepoMissing = probe.status === 404
     return {
       ok: false,
       canWrite: false,
       fullName,
-      defaultBranch: repo.default_branch,
-      message: `已连上 ${fullName}（${flags}仓库），但这个 Token 没有写权限。请到 Token 设置里把 Contents 改为 Read and write。`,
+      defaultBranch: branch,
+      message: isRepoMissing
+        ? `Token 没有被授权写 ${fullName}（404）。请到这个 Token 的 Repository access 里勾上该仓库。`
+        : `已连上 ${fullName}（${flags}仓库），但这个 Token 没有写权限。请到该 Token 的 Repository permissions 里把 Contents 改为 “Read and write”。${
+            probe.message ? `（GitHub 返回：${probe.message}）` : ''
+          }`,
     }
   }
 
@@ -254,7 +291,7 @@ export async function ghVerify(cfg: GitHubConfig): Promise<GhVerifyResult> {
       canWrite: true,
       dataPathExists: false,
       fullName,
-      defaultBranch: repo.default_branch,
+      defaultBranch: branch,
       message: `读到仓库 ${fullName}，但读取数据目录失败：${(e as Error).message}`,
     }
   }
@@ -265,21 +302,17 @@ export async function ghVerify(cfg: GitHubConfig): Promise<GhVerifyResult> {
       canWrite: true,
       dataPathExists: false,
       fullName,
-      defaultBranch: repo.default_branch,
-      message: `仓库 ${fullName} 可访问，但里面没有 ${REPO_DATA_DIR}/${INDEX_FILE}。请确认选的是小说资料库仓库。`,
+      defaultBranch: branch,
+      message: `仓库 ${fullName} 可写，但里面没有 ${REPO_DATA_DIR}/${INDEX_FILE}。请确认选的是小说资料库仓库。`,
     }
   }
-
-  const writeHint = permsKnown
-    ? '写权限正常'
-    : '未能从仓库信息确认写权限，若首次提交失败请检查 Contents 权限'
 
   return {
     ok: true,
     canWrite: true,
     dataPathExists: true,
     fullName,
-    defaultBranch: repo.default_branch,
-    message: `已连接 ${fullName}（${flags}仓库，默认分支 ${repo.default_branch ?? 'main'}），${writeHint}`,
+    defaultBranch: branch,
+    message: `已连接 ${fullName}（${flags}仓库，默认分支 ${branch}），写权限正常`,
   }
 }
