@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-08T07:40:00.020Z",
+  "updatedAt": "2026-10-08T07:54:30.000Z",
   "novels": [
     {
       "id": "novel_xinggui",
@@ -14,6 +14,17 @@
         "中篇"
       ],
       "file": "novels/novel_xinggui.json"
+    },
+    {
+      "id": "novel_wCRyzMtBAO",
+      "title": "第一本小说",
+      "author": "kibin",
+      "cover": "",
+      "summary": "",
+      "tags": [
+        "玄幻"
+      ],
+      "file": "novels/novel_wCRyzMtBAO.json"
     }
   ]
 }
