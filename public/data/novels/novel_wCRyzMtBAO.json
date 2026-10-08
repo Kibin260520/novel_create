@@ -9,7 +9,7 @@
   ],
   "summary": "",
   "createdAt": "2026-10-08T07:38:27.693Z",
-  "updatedAt": "2026-10-08T08:13:22.752Z",
+  "updatedAt": "2026-10-08T08:14:22.258Z",
   "modules": [
     {
       "id": "mod_4EsFz1keH6",
@@ -475,7 +475,19 @@
           "order": 3
         }
       ],
-      "entries": [],
+      "entries": [
+        {
+          "id": "ent__hEl8f1W6U",
+          "createdAt": "2026-10-08T08:14:22.258Z",
+          "updatedAt": "2026-10-08T08:14:22.258Z",
+          "values": {
+            "name": "神舞枪"
+          },
+          "notes": "",
+          "tags": [],
+          "order": 0
+        }
+      ],
       "order": 7
     },
     {
