@@ -1,0 +1,451 @@
+{
+  "id": "novel_wCRyzMtBAO",
+  "schemaVersion": 1,
+  "title": "第一本小说",
+  "author": "kibin",
+  "cover": "",
+  "tags": [
+    "玄幻"
+  ],
+  "summary": "",
+  "createdAt": "2026-10-08T07:38:27.693Z",
+  "updatedAt": "2026-10-08T07:38:27.693Z",
+  "modules": [
+    {
+      "id": "mod_4EsFz1keH6",
+      "name": "设定",
+      "entryLabel": "设定",
+      "description": "世界规则、力量体系、背景设定",
+      "icon": {
+        "type": "builtin",
+        "name": "book"
+      },
+      "color": "#6366f1",
+      "fields": [
+        {
+          "key": "name",
+          "label": "名称",
+          "type": "text",
+          "required": true,
+          "placeholder": "如：灵气修炼体系",
+          "order": 0
+        },
+        {
+          "key": "category",
+          "label": "类别",
+          "type": "select",
+          "options": [
+            "世界观",
+            "力量体系",
+            "规则",
+            "背景",
+            "其他"
+          ],
+          "order": 1
+        },
+        {
+          "key": "detail",
+          "label": "详情",
+          "type": "textarea",
+          "placeholder": "展开描述这条设定…",
+          "order": 2
+        }
+      ],
+      "entries": [],
+      "order": 0
+    },
+    {
+      "id": "mod_LFgTfp9vku",
+      "name": "势力",
+      "entryLabel": "势力",
+      "description": "门派、组织、国家、阵营",
+      "icon": {
+        "type": "builtin",
+        "name": "shield"
+      },
+      "color": "#e5484d",
+      "fields": [
+        {
+          "key": "name",
+          "label": "名称",
+          "type": "text",
+          "required": true,
+          "placeholder": "如：青云宗",
+          "order": 0
+        },
+        {
+          "key": "type",
+          "label": "类型",
+          "type": "select",
+          "options": [
+            "宗门",
+            "家族",
+            "王朝",
+            "组织",
+            "异族",
+            "其他"
+          ],
+          "order": 1
+        },
+        {
+          "key": "leader",
+          "label": "首领",
+          "type": "text",
+          "order": 2
+        },
+        {
+          "key": "stance",
+          "label": "立场",
+          "type": "text",
+          "placeholder": "如：正道 / 中立 / 魔道",
+          "order": 3
+        },
+        {
+          "key": "intro",
+          "label": "简介",
+          "type": "textarea",
+          "order": 4
+        }
+      ],
+      "entries": [],
+      "order": 1
+    },
+    {
+      "id": "mod_Rb1B6tVl7c",
+      "name": "灵感",
+      "entryLabel": "灵感",
+      "description": "零散的点子、桥段、画面",
+      "icon": {
+        "type": "builtin",
+        "name": "sparkles"
+      },
+      "color": "#f5a524",
+      "fields": [
+        {
+          "key": "idea",
+          "label": "灵感内容",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "随手记下的一个念头…",
+          "order": 0
+        },
+        {
+          "key": "source",
+          "label": "来源",
+          "type": "text",
+          "placeholder": "梦 / 读书 / 音乐 / 生活",
+          "order": 1
+        },
+        {
+          "key": "tags",
+          "label": "关键词",
+          "type": "tags",
+          "order": 2
+        }
+      ],
+      "entries": [],
+      "order": 2
+    },
+    {
+      "id": "mod_NFQGApIjEI",
+      "name": "技能名",
+      "entryLabel": "技能",
+      "description": "功法、招式、术法名称",
+      "icon": {
+        "type": "builtin",
+        "name": "sword"
+      },
+      "color": "#10a37f",
+      "fields": [
+        {
+          "key": "name",
+          "label": "名称",
+          "type": "text",
+          "required": true,
+          "placeholder": "如：寒江独钓",
+          "order": 0
+        },
+        {
+          "key": "category",
+          "label": "类别",
+          "type": "select",
+          "options": [
+            "攻击",
+            "防御",
+            "身法",
+            "辅助",
+            "禁忌",
+            "被动"
+          ],
+          "order": 1
+        },
+        {
+          "key": "rank",
+          "label": "品阶",
+          "type": "select",
+          "options": [
+            "凡阶",
+            "灵阶",
+            "玄阶",
+            "天阶",
+            "神阶"
+          ],
+          "order": 2
+        },
+        {
+          "key": "effect",
+          "label": "效果",
+          "type": "textarea",
+          "order": 3
+        }
+      ],
+      "entries": [],
+      "order": 3
+    },
+    {
+      "id": "mod_xGfbXakObB",
+      "name": "角色",
+      "entryLabel": "角色",
+      "description": "主角、配角、反派",
+      "icon": {
+        "type": "builtin",
+        "name": "user"
+      },
+      "color": "#8b5cf6",
+      "fields": [
+        {
+          "key": "name",
+          "label": "姓名",
+          "type": "text",
+          "required": true,
+          "placeholder": "如：林砚",
+          "order": 0
+        },
+        {
+          "key": "alias",
+          "label": "别称",
+          "type": "text",
+          "placeholder": "道号 / 外号",
+          "order": 1
+        },
+        {
+          "key": "gender",
+          "label": "性别",
+          "type": "select",
+          "options": [
+            "男",
+            "女",
+            "其他"
+          ],
+          "order": 2
+        },
+        {
+          "key": "faction",
+          "label": "所属势力",
+          "type": "text",
+          "order": 3
+        },
+        {
+          "key": "rank",
+          "label": "境界 / 等级",
+          "type": "text",
+          "order": 4
+        },
+        {
+          "key": "intro",
+          "label": "简介",
+          "type": "textarea",
+          "order": 5
+        }
+      ],
+      "entries": [],
+      "order": 4
+    },
+    {
+      "id": "mod_STQhQiYnRD",
+      "name": "情节",
+      "entryLabel": "情节",
+      "description": "剧情节点、转折、伏笔",
+      "icon": {
+        "type": "builtin",
+        "name": "book-open"
+      },
+      "color": "#b06cf0",
+      "fields": [
+        {
+          "key": "title",
+          "label": "标题",
+          "type": "text",
+          "required": true,
+          "order": 0
+        },
+        {
+          "key": "stage",
+          "label": "阶段",
+          "type": "select",
+          "options": [
+            "开端",
+            "发展",
+            "转折",
+            "高潮",
+            "结局",
+            "伏笔"
+          ],
+          "order": 1
+        },
+        {
+          "key": "outline",
+          "label": "概要",
+          "type": "textarea",
+          "order": 2
+        }
+      ],
+      "entries": [],
+      "order": 5
+    },
+    {
+      "id": "mod_VCMEbi3so4",
+      "name": "地点",
+      "entryLabel": "地点",
+      "description": "地理、城市、秘境",
+      "icon": {
+        "type": "builtin",
+        "name": "map"
+      },
+      "color": "#0ea5e9",
+      "fields": [
+        {
+          "key": "name",
+          "label": "名称",
+          "type": "text",
+          "required": true,
+          "order": 0
+        },
+        {
+          "key": "type",
+          "label": "类型",
+          "type": "select",
+          "options": [
+            "城池",
+            "山川",
+            "秘境",
+            "遗迹",
+            "异界",
+            "其他"
+          ],
+          "order": 1
+        },
+        {
+          "key": "owner",
+          "label": "归属",
+          "type": "text",
+          "order": 2
+        },
+        {
+          "key": "desc",
+          "label": "描述",
+          "type": "textarea",
+          "order": 3
+        }
+      ],
+      "entries": [],
+      "order": 6
+    },
+    {
+      "id": "mod_67ycyHZTUh",
+      "name": "道具",
+      "entryLabel": "道具",
+      "description": "法宝、兵器、丹药、信物",
+      "icon": {
+        "type": "builtin",
+        "name": "package"
+      },
+      "color": "#f97316",
+      "fields": [
+        {
+          "key": "name",
+          "label": "名称",
+          "type": "text",
+          "required": true,
+          "order": 0
+        },
+        {
+          "key": "category",
+          "label": "类别",
+          "type": "select",
+          "options": [
+            "兵器",
+            "法宝",
+            "丹药",
+            "信物",
+            "材料",
+            "其他"
+          ],
+          "order": 1
+        },
+        {
+          "key": "rank",
+          "label": "品阶",
+          "type": "select",
+          "options": [
+            "凡品",
+            "灵品",
+            "玄品",
+            "天品",
+            "神品"
+          ],
+          "order": 2
+        },
+        {
+          "key": "note",
+          "label": "说明",
+          "type": "textarea",
+          "order": 3
+        }
+      ],
+      "entries": [],
+      "order": 7
+    },
+    {
+      "id": "mod__lW9D4Tst5",
+      "name": "时间线",
+      "entryLabel": "事件",
+      "description": "大事记、历史年表",
+      "icon": {
+        "type": "builtin",
+        "name": "clock"
+      },
+      "color": "#64748b",
+      "fields": [
+        {
+          "key": "event",
+          "label": "事件",
+          "type": "text",
+          "required": true,
+          "order": 0
+        },
+        {
+          "key": "time",
+          "label": "时间点",
+          "type": "text",
+          "placeholder": "如：青冥历 328 年",
+          "order": 1
+        },
+        {
+          "key": "cast",
+          "label": "关联角色",
+          "type": "text",
+          "order": 2
+        },
+        {
+          "key": "brief",
+          "label": "简述",
+          "type": "textarea",
+          "order": 3
+        }
+      ],
+      "entries": [],
+      "order": 8
+    }
+  ]
+}
