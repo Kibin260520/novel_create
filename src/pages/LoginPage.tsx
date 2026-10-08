@@ -67,7 +67,7 @@ export function LoginPage() {
             <UiIcon name="layers" size={20} />
           </span>
           <div>
-            <h1>小说资料库</h1>
+            <h1>小说灵感创作记录库</h1>
             <p className="auth-sub">先连接你的 GitHub 仓库，才能进入并保存改动</p>
           </div>
         </div>
@@ -151,7 +151,6 @@ export function LoginPage() {
           <a href={PAT_URL} target="_blank" rel="noreferrer">
             <UiIcon name="external" size={13} /> 去创建 Token
           </a>
-          <span className="muted">权限只需 Contents: Read and write</span>
         </div>
 
         <details className="auth-help">

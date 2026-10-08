@@ -207,7 +207,7 @@ async function probeWriteAccess(cfg: GitHubConfig): Promise<{ ok: boolean; statu
  * 登录校验：拿到「能不能进、能不能写、找不找得到数据目录」三个结论。
  *
  * 1) GET /repos/{owner}/{repo} —— 仓库可达性、默认分支、公开/私有；
- * 2) 试读 public/data/index.json —— 确认这就是一个「小说资料库」仓库，
+ * 2) 试读 public/data/index.json —— 确认这就是一个「小说灵感创作记录库」仓库，
  *    避免用户把仓库名填错却一路绿灯、直到第一次提交才发现；
  * 3) 真实写探针 —— 见 probeWriteAccess，确认 Token 确实具备 Contents: 写权限。
  *
@@ -303,7 +303,7 @@ export async function ghVerify(cfg: GitHubConfig): Promise<GhVerifyResult> {
       dataPathExists: false,
       fullName,
       defaultBranch: branch,
-      message: `仓库 ${fullName} 可写，但里面没有 ${REPO_DATA_DIR}/${INDEX_FILE}。请确认选的是小说资料库仓库。`,
+      message: `仓库 ${fullName} 可写，但里面没有 ${REPO_DATA_DIR}/${INDEX_FILE}。请确认选的是小说灵感创作记录库对应的仓库。`,
     }
   }
 

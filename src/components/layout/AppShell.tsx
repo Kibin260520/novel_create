@@ -23,7 +23,7 @@ export function AppShell() {
           <span className="brand-mark">
             <UiIcon name="layers" size={18} />
           </span>
-          <span>小说资料库</span>
+          <span className="brand-name">小说灵感创作记录库</span>
         </Link>
 
         <div className="header-actions">

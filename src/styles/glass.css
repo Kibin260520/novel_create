@@ -43,6 +43,13 @@
   letter-spacing: -0.01em;
   font-size: 16px;
   white-space: nowrap;
+  /* 站名较长，窄屏时允许收缩，避免把右侧操作区挤出去 */
+  min-width: 0;
+}
+.brand-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .brand .brand-mark {
   width: 32px;
