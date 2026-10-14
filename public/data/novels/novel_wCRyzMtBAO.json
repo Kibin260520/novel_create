@@ -9,7 +9,7 @@
   ],
   "summary": "",
   "createdAt": "2026-10-08T07:38:27.693Z",
-  "updatedAt": "2026-10-11T10:58:44.463Z",
+  "updatedAt": "2026-10-14T10:23:03.165Z",
   "modules": [
     {
       "id": "mod_4EsFz1keH6",
@@ -197,6 +197,18 @@
           "notes": "",
           "tags": [],
           "order": 1
+        },
+        {
+          "id": "ent_JErwZZAdX8",
+          "createdAt": "2026-10-14T10:23:03.164Z",
+          "updatedAt": "2026-10-14T10:23:03.164Z",
+          "values": {
+            "idea": "主配角拥有强大的力量，却因为某些原因或约定将自己困在某个地方，只要某种物件不来或心结没解开，就永远不走",
+            "source": "抖音"
+          },
+          "notes": "",
+          "tags": [],
+          "order": 2
         }
       ],
       "order": 2
