@@ -9,7 +9,7 @@
   ],
   "summary": "",
   "createdAt": "2026-10-08T07:38:27.693Z",
-  "updatedAt": "2026-10-14T10:23:03.165Z",
+  "updatedAt": "2026-10-16T03:20:47.373Z",
   "modules": [
     {
       "id": "mod_4EsFz1keH6",
@@ -67,6 +67,18 @@
           "notes": "",
           "tags": [],
           "order": 0
+        },
+        {
+          "id": "ent_lOtodDM4b_",
+          "createdAt": "2026-10-16T03:20:47.368Z",
+          "updatedAt": "2026-10-16T03:20:47.368Z",
+          "values": {
+            "name": "战法",
+            "detail": "无影战法，极光战法"
+          },
+          "notes": "",
+          "tags": [],
+          "order": 1
         }
       ],
       "order": 0
