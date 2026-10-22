@@ -17,6 +17,7 @@ import {
   writeSessionJSON,
 } from '@/lib/storage'
 import { ghVerify } from '@/lib/github'
+import { rememberLogin } from '@/lib/loginHistory'
 import type { GitHubConfig } from '@/types/github'
 
 /**
@@ -120,6 +121,8 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
         token: cfg.token,
       }
       writeSessionJSON(KEYS.auth, next)
+      // 只有校验通过才记历史 —— 填错的仓库不该出现在下次的下拉里
+      rememberLogin({ owner: next.owner, repo: next.repo, branch: next.branch })
       setSettings(next)
       return { ok: true, message: r.message, branch }
     } finally {

@@ -17,6 +17,8 @@
   --glass-bg-soft: rgba(255, 255, 255, 0.36);
   --glass-border: rgba(255, 255, 255, 0.85);
   --glass-highlight: rgba(255, 255, 255, 0.9);
+  /* 浮层（例如输入框的历史下拉）专用：几乎不透明，避免下层文字透上来 */
+  --pop-bg: rgba(255, 255, 255, 0.97);
   --glass-blur: 20px;
   --glass-saturate: 160%;
 
@@ -95,6 +97,7 @@
   --glass-bg-soft: rgba(30, 35, 60, 0.38);
   --glass-border: rgba(255, 255, 255, 0.12);
   --glass-highlight: rgba(255, 255, 255, 0.16);
+  --pop-bg: rgba(27, 32, 54, 0.97);
 
   --text-1: #eef1fb;
   --text-2: #b3bad4;

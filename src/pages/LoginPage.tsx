@@ -1,8 +1,14 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { UiIcon } from '@/components/icons/UiIcon'
+import { HistoryInput, type LoginSuggestion } from '@/components/auth/HistoryInput'
 import { useSettings, type AppSettings } from '@/store/SettingsContext'
 import { useToast } from '@/components/common/Toast'
+import {
+  forgetLogin,
+  readLoginHistory,
+  type LoginIdentity,
+} from '@/lib/loginHistory'
 import { REPO_DATA_DIR, INDEX_FILE } from '@/lib/paths'
 
 const PAT_URL = 'https://github.com/settings/personal-access-tokens/new'
@@ -23,11 +29,22 @@ export function LoginPage() {
   /** 登录成功后要回到的页面 */
   const from = (location.state as { from?: string } | null)?.from || '/'
 
-  const [form, setForm] = useState<AppSettings>({
-    owner: settings.owner,
-    repo: settings.repo,
-    branch: settings.branch || 'main',
-    token: '',
+  /** 成功登录过的 owner / repo / branch（不含 Token） */
+  const [history, setHistory] = useState<LoginIdentity[]>(readLoginHistory)
+
+  const [form, setForm] = useState<AppSettings>(() => {
+    const preset: AppSettings = {
+      owner: settings.owner.trim(),
+      repo: settings.repo.trim(),
+      branch: settings.branch || 'main',
+      token: '',
+    }
+    // 会话已过期 / 主动登出后，直接带上最近一次成功连接的那一组，只需要再补 Token
+    if (preset.owner) return preset
+    const last = history[0]
+    return last
+      ? { owner: last.owner, repo: last.repo, branch: last.branch || 'main', token: '' }
+      : preset
   })
   const [error, setError] = useState('')
 
@@ -37,6 +54,65 @@ export function LoginPage() {
   }, [isAuthenticated, from, navigate])
 
   const set = (patch: Partial<AppSettings>) => setForm((f) => ({ ...f, ...patch }))
+
+  /** owner 候选：按用户名去重，顺便标出它下面记了几本仓库 */
+  const ownerOptions = useMemo<LoginSuggestion[]>(() => {
+    const q = form.owner.trim().toLowerCase()
+    const counted = new Map<string, { label: string; count: number }>()
+    for (const h of history) {
+      const key = h.owner.toLowerCase()
+      if (q && !key.includes(q)) continue
+      const hit = counted.get(key)
+      if (hit) hit.count += 1
+      else counted.set(key, { label: h.owner, count: 1 })
+    }
+    return [...counted.entries()].map(([key, v]) => ({
+      key: `owner:${key}`,
+      label: v.label,
+      hint: v.count > 1 ? `${v.count} 个仓库` : undefined,
+      owner: v.label,
+      repo: '',
+      branch: '',
+    }))
+  }, [history, form.owner])
+
+  /** repo 候选：优先只列当前 owner 下的仓库；owner 没填时列出全部 */
+  const repoOptions = useMemo<LoginSuggestion[]>(() => {
+    const owner = form.owner.trim().toLowerCase()
+    const q = form.repo.trim().toLowerCase()
+    return history
+      .filter(
+        (h) =>
+          (!owner || h.owner.toLowerCase() === owner) &&
+          (!q || h.repo.toLowerCase().includes(q))
+      )
+      .map((h) => ({
+        key: `repo:${h.owner}/${h.repo}`.toLowerCase(),
+        label: h.repo,
+        hint: owner ? `${h.branch || 'main'} 分支` : `${h.owner}/${h.repo}`,
+        owner: h.owner,
+        repo: h.repo,
+        branch: h.branch || 'main',
+      }))
+  }, [history, form.owner, form.repo])
+
+  const pickOwner = (s: LoginSuggestion) => {
+    const same = history.filter((h) => h.owner.toLowerCase() === s.owner.toLowerCase())
+    // 这个用户名下只有一条记录时，仓库和分支一起带出来，少点两次
+    if (same.length === 1) {
+      set({ owner: same[0].owner, repo: same[0].repo, branch: same[0].branch || 'main' })
+    } else {
+      set({ owner: s.owner })
+    }
+  }
+
+  const pickRepo = (s: LoginSuggestion) => {
+    set({ owner: s.owner, repo: s.repo, branch: s.branch || 'main' })
+  }
+
+  const removeHistory = (s: LoginSuggestion) => {
+    setHistory(forgetLogin(s.owner, s.repo))
+  }
 
   const submit = async (e: FormEvent) => {
     e.preventDefault()
@@ -75,25 +151,24 @@ export function LoginPage() {
         <div className="auth-fields">
           <div className="field">
             <label className="field-label">用户名 / 组织名（owner）</label>
-            <input
-              className="input"
+            <HistoryInput
               value={form.owner}
               placeholder="例如：Kibin260520"
-              spellCheck={false}
-              autoComplete="off"
-              onChange={(e) => set({ owner: e.target.value })}
+              suggestions={ownerOptions}
+              onChange={(v) => set({ owner: v })}
+              onPick={pickOwner}
             />
           </div>
 
           <div className="field">
             <label className="field-label">仓库名（repo）</label>
-            <input
-              className="input"
+            <HistoryInput
               value={form.repo}
               placeholder="例如：novel_create"
-              spellCheck={false}
-              autoComplete="off"
-              onChange={(e) => set({ repo: e.target.value })}
+              suggestions={repoOptions}
+              onChange={(v) => set({ repo: v })}
+              onPick={pickRepo}
+              onRemove={removeHistory}
             />
           </div>
 

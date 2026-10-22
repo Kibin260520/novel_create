@@ -13,6 +13,8 @@ const PREFIX = 'nc.'
 export const KEYS = {
   /** 登录凭据（sessionStorage） */
   auth: `${PREFIX}auth`,
+  /** 历次成功登录过的 owner / repo / branch（localStorage，不含 Token） */
+  loginHistory: `${PREFIX}login.history`,
   cacheIndex: `${PREFIX}cache.index`,
   cacheNovel: (id: string) => `${PREFIX}cache.novel.${id}`,
   theme: `${PREFIX}theme`,
