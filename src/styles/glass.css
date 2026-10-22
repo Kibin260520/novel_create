@@ -419,6 +419,24 @@
 .btn-danger:hover {
   background: color-mix(in srgb, var(--danger) 18%, transparent);
 }
+/* 强调描边：比 ghost 显眼，又不去抢页面主操作（比如「编辑信息」） */
+.btn-accent {
+  color: var(--accent-strong);
+  border-color: color-mix(in srgb, var(--accent) 42%, transparent);
+  background: color-mix(in srgb, var(--accent) 10%, var(--glass-bg-strong));
+}
+.btn-accent:hover:not(:disabled) {
+  color: #fff;
+  border-color: transparent;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  box-shadow: var(--sh-accent);
+}
+.btn-accent svg {
+  transition: transform 0.5s var(--ease);
+}
+.btn-accent:hover:not(:disabled) svg {
+  transform: rotate(180deg);
+}
 .btn-sm {
   padding: 6px 12px;
   font-size: 13px;
@@ -1349,4 +1367,177 @@ body.nc-dragging {
     padding: 10px 9px;
     font-size: 14.5px;
   }
+}
+
+/* =========================================================
+   数据过期横幅（StaleBanner）
+   参照 GitHub / Notion 的 banner：整条浅底 + 圆图标 + 实心主按钮，
+   只在「没拿到远端数据」时出现，所以可以做得足够扎眼
+   ========================================================= */
+.stale-banner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 12px 11px 14px;
+  margin-bottom: var(--sp-5);
+  border: 1px solid color-mix(in srgb, var(--warn) 40%, transparent);
+  border-radius: var(--r-md);
+  background: color-mix(in srgb, var(--warn) 13%, var(--glass-bg-strong));
+  box-shadow: var(--sh-1);
+  animation: stale-in var(--dur) var(--ease);
+}
+@keyframes stale-in {
+  from {
+    opacity: 0;
+    transform: translateY(-7px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.stale-icon {
+  position: relative;
+  flex: none;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--warn) 22%, transparent);
+  color: color-mix(in srgb, var(--warn) 70%, var(--text-1));
+}
+/* 右上角小红点低频呼吸一下：提示「有事」，但不是一直晃 */
+.stale-icon::after {
+  content: "";
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--danger);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--glass-bg-strong) 85%, transparent);
+  animation: stale-dot 3.2s var(--ease) infinite;
+}
+@keyframes stale-dot {
+  0%,
+  72%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  84% {
+    transform: scale(1.4);
+    opacity: 0.7;
+  }
+}
+
+.stale-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1 1 260px;
+  min-width: 180px;
+  line-height: 1.45;
+}
+.stale-text strong {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-1);
+}
+.stale-text span {
+  font-size: 12.5px;
+  color: var(--text-2);
+}
+
+.stale-action {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 15px;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: var(--accent-strong);
+  color: #fff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--sh-accent);
+  transition: transform var(--dur-fast) var(--ease), filter var(--dur-fast) var(--ease);
+}
+.stale-action:hover:not(:disabled) {
+  transform: translateY(-1px);
+  filter: brightness(1.07);
+}
+.stale-action:active:not(:disabled) {
+  transform: translateY(0);
+}
+.stale-action:disabled {
+  opacity: 0.72;
+  cursor: default;
+}
+
+.stale-close {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-3);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+.stale-close:hover {
+  background: var(--line);
+  color: var(--text-1);
+}
+
+/* 窄屏：文字单独占一行，主按钮拉满整行宽度 —— 手机上才够得着 */
+@media (max-width: 600px) {
+  .stale-banner {
+    display: grid;
+    grid-template-columns: 30px 1fr auto;
+    grid-template-areas:
+      "icon text close"
+      "btn btn btn";
+    gap: 9px 10px;
+    padding: 11px;
+  }
+  .stale-icon {
+    grid-area: icon;
+  }
+  .stale-text {
+    grid-area: text;
+    flex: none;
+    min-width: 0;
+  }
+  .stale-close {
+    grid-area: close;
+    align-self: start;
+  }
+  .stale-action {
+    grid-area: btn;
+    justify-content: center;
+    padding: 10px 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stale-banner,
+  .stale-icon::after {
+    animation: none;
+  }
+}
+
+/* 深色主题下 accent-strong 是亮紫（#a5abff），白字对比不够，改用深色字 */
+[data-theme="dark"] .stale-action {
+  color: var(--text-invert);
 }

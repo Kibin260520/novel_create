@@ -17,6 +17,8 @@ export const KEYS = {
   loginHistory: `${PREFIX}login.history`,
   cacheIndex: `${PREFIX}cache.index`,
   cacheNovel: (id: string) => `${PREFIX}cache.novel.${id}`,
+  /** 「数据可能不是最新」横幅被手动关掉的标记（sessionStorage，只本次会话有效） */
+  staleDismissed: `${PREFIX}stale.dismissed`,
   theme: `${PREFIX}theme`,
   work: `${PREFIX}work`,
 } as const

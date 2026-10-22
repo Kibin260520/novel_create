@@ -4,6 +4,7 @@ import { BookCard } from '@/components/novel/BookCard'
 import { NovelForm } from '@/components/novel/NovelForm'
 import { EmptyState } from '@/components/common/EmptyState'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
+import { StaleBanner } from '@/components/common/StaleBanner'
 import { UiIcon } from '@/components/icons/UiIcon'
 import { useData } from '@/store/DataContext'
 import { useToast } from '@/components/common/Toast'
@@ -25,6 +26,7 @@ export function HomePage() {
     deleteNovel,
     refresh,
     syncing,
+    source,
   } = useData()
   const toast = useToast()
   const navigate = useNavigate()
@@ -152,6 +154,13 @@ export function HomePage() {
           </button>
         </div>
       </div>
+
+      <StaleBanner
+        source={source}
+        scope="index"
+        busy={busy}
+        onRefresh={() => void doRefresh()}
+      />
 
       {loading ? (
         <div className="shelf-grid">

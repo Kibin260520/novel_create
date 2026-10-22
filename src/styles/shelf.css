@@ -121,32 +121,57 @@
   box-shadow: 0 0 0 3px rgba(166, 59, 44, 0.08);
 }
 
-/* 「数据没更新？点这里刷新」—— 纸面上的一个小按钮，不抢书架的戏 */
+/* 「数据没更新？点这里刷新」
+   原来是描边灰按钮，太容易当成装饰。改成书脊红实心 + 投影，
+   和书架里唯一的强调色统一，一眼能看见 */
 .shelf-refresh {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   flex: none;
-  padding: 8px 13px;
-  border: 1px solid var(--rule);
+  padding: 9px 15px;
+  border: 0;
   border-radius: var(--r-pill);
-  background: var(--paper-card);
-  color: var(--ink-2);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--cloth) 86%, #fff),
+    var(--cloth)
+  );
+  color: #fff;
   font-family: inherit;
   font-size: 12.5px;
-  letter-spacing: 0.01em;
+  font-weight: 600;
+  letter-spacing: 0.02em;
   white-space: nowrap;
   cursor: pointer;
-  transition: color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease),
-    background var(--dur-fast) var(--ease);
+  box-shadow: 0 5px 14px color-mix(in srgb, var(--cloth) 28%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease),
+    filter var(--dur-fast) var(--ease);
 }
 .shelf-refresh:hover:not(:disabled) {
-  color: var(--ink);
-  border-color: var(--rule-strong);
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+  box-shadow: 0 9px 22px color-mix(in srgb, var(--cloth) 36%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.24);
+}
+.shelf-refresh:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 3px 9px color-mix(in srgb, var(--cloth) 30%, transparent);
 }
 .shelf-refresh:disabled {
-  opacity: 0.62;
+  opacity: 0.7;
   cursor: default;
+}
+/* 悬停时箭头转一圈，给它一点"可以拉一下"的暗示 */
+.shelf-refresh svg {
+  transition: transform 0.5s var(--ease);
+}
+.shelf-refresh:hover:not(:disabled) svg {
+  transform: rotate(180deg);
+}
+.shelf-refresh svg.spin {
+  transition: none;
 }
 .shelf-refresh-short {
   display: none;
@@ -160,6 +185,52 @@
     display: inline;
   }
 }
+
+/* 书架上的过期提示：换成纸面配色（书脊红），别用玻璃那套琥珀底 */
+.shelf-page .stale-banner {
+  border: 1px solid color-mix(in srgb, var(--cloth) 24%, transparent);
+  border-left: 3px solid var(--cloth);
+  border-radius: var(--r-sm);
+  background: color-mix(in srgb, var(--cloth) 6%, var(--paper-card));
+  box-shadow: none;
+  padding: 10px 12px;
+}
+.shelf-page .stale-icon {
+  background: color-mix(in srgb, var(--cloth) 12%, transparent);
+  color: var(--cloth);
+}
+.shelf-page .stale-icon::after {
+  background: var(--cloth);
+  box-shadow: 0 0 0 2px var(--paper-card);
+}
+.shelf-page .stale-text strong {
+  color: var(--ink);
+}
+.shelf-page .stale-text span {
+  color: var(--ink-2);
+}
+.shelf-page .stale-action {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--cloth) 86%, #fff),
+    var(--cloth)
+  );
+  color: #fff;
+  box-shadow: 0 5px 14px color-mix(in srgb, var(--cloth) 26%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+/* 书脊红底上必须是白字（glass.css 给深色主题的紫色按钮配了深色字，这条要压回去） */
+[data-theme="dark"] .shelf-page .stale-action {
+  color: #fff;
+}
+.shelf-page .stale-close {
+  color: var(--ink-3);
+}
+.shelf-page .stale-close:hover {
+  background: var(--rule);
+  color: var(--ink);
+}
+
 
 /* ---------------- 书架网格 ---------------- */
 .shelf-grid {

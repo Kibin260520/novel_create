@@ -8,6 +8,7 @@ import { AddCard } from '@/components/common/AddCard'
 import { EmptyState } from '@/components/common/EmptyState'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 import { Modal } from '@/components/common/Modal'
+import { StaleBanner } from '@/components/common/StaleBanner'
 import { IconPicker } from '@/components/icons/IconPicker'
 import { UiIcon } from '@/components/icons/UiIcon'
 import { useData } from '@/store/DataContext'
@@ -31,6 +32,7 @@ export function NovelPage() {
     deleteModule,
     refresh,
     refreshNovel,
+    source,
   } = useData()
 
   const novel = getNovel(novelId)
@@ -127,7 +129,7 @@ export function NovelPage() {
             <UiIcon name="edit" size={16} /> 编辑信息
           </button>
           <button
-            className="btn btn-ghost"
+            className="btn btn-accent"
             onClick={() => void doRefresh()}
             disabled={refreshing}
             title="数据没更新？从 GitHub 重新拉一次"
@@ -141,6 +143,13 @@ export function NovelPage() {
           </button>
         </div>
       </div>
+
+      <StaleBanner
+        source={source}
+        scope="novel"
+        busy={refreshing}
+        onRefresh={() => void doRefresh()}
+      />
 
       {novel?.summary && (
         <p style={{ color: 'var(--text-2)', maxWidth: 780, marginBottom: 'var(--sp-5)' }}>
