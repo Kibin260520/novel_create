@@ -158,6 +158,11 @@ export function LoginPage() {
               onChange={(v) => set({ owner: v })}
               onPick={pickOwner}
             />
+            {history.length === 0 && (
+              <div className="field-hint">
+                <UiIcon name="info" size={12} /> 登录成功后会记住，下次点一下就能直接选
+              </div>
+            )}
           </div>
 
           <div className="field">
@@ -201,6 +206,13 @@ export function LoginPage() {
               <UiIcon name="lock" size={12} /> 只保存在本机浏览器，关掉标签页即失效，不会上传
             </div>
           </div>
+        </div>
+
+        <div className="auth-note">
+          <UiIcon name="info" size={12} />
+          <span>
+            用户名和仓库名只记在这台设备的浏览器里，换手机或换浏览器要重新填一次；Token 任何时候都不会被记住。
+          </span>
         </div>
 
         {error && (

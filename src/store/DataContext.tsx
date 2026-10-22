@@ -58,6 +58,8 @@ export interface DataApi {
 
   /** 刷新数据；返回「这次远端刷新是否真的拿到了数据」 */
   refresh: (force?: boolean) => Promise<boolean>
+  /** 强制把某一本小说从远端重拉一次；返回「远端是否真的拿到了数据」 */
+  refreshNovel: (id: string) => Promise<boolean>
   getNovel: (id: string) => Novel | undefined
   getSummary: (id: string) => NovelSummary | undefined
   loadNovel: (id: string) => Promise<Novel | null>
@@ -391,6 +393,36 @@ export function DataProvider({ children }: { children: ReactNode }) {
     [ghConfig, isConfigured, canWrite, setNovelLocal, toast]
   )
 
+  /**
+   * 强制把某一本小说从远端重拉一次（详情页「数据没更新？」那个入口用）。
+   *
+   * 和 loadNovel 的区别：本地已有这本书也照拉 —— loadNovel 见到有货就直接返回，
+   * 正是它挡住了「手动刷新」。返回值表示远端这次是否真的拿到了数据，
+   * 调用方据此决定提示文案，不能无条件报「已同步」。
+   */
+  const refreshNovel = useCallback(
+    async (id: string): Promise<boolean> => {
+      const cfg = isConfigured ? ghConfig : null
+      if (!cfg) return false
+      const summary = indexRef.current?.novels.find((n) => n.id === id)
+      const file = summary?.file || novelFile(id)
+      const gen = mutateGen.current
+      try {
+        const data = await readRawNovel(cfg, file, id, true)
+        // 期间改过这本书：这份远端结果已过期，丢弃
+        if (mutateGen.current !== gen) return false
+        const cur = novelsRef.current[id]
+        if (cur && cur.updatedAt > data.updatedAt) return false
+        setNovelLocal(data)
+        setSource('raw')
+        return true
+      } catch {
+        return false
+      }
+    },
+    [ghConfig, isConfigured, setNovelLocal]
+  )
+
   const getNovel = useCallback((id: string) => novelsRef.current[id], [])
   const getSummary = useCallback(
     (id: string) => indexRef.current?.novels.find((n) => n.id === id),
@@ -660,6 +692,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       canWrite,
       isConfigured,
       refresh,
+      refreshNovel,
       getNovel,
       getSummary,
       loadNovel,
@@ -687,6 +720,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       canWrite,
       isConfigured,
       refresh,
+      refreshNovel,
       getNovel,
       getSummary,
       loadNovel,

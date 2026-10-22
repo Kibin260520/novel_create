@@ -29,6 +29,8 @@ export function NovelPage() {
     createModule,
     updateModule,
     deleteModule,
+    refresh,
+    refreshNovel,
   } = useData()
 
   const novel = getNovel(novelId)
@@ -43,11 +45,29 @@ export function NovelPage() {
   const [iconTarget, setIconTarget] = useState<Module | null>(null)
   const [novelFormOpen, setNovelFormOpen] = useState(false)
   const [pendingDeleteNovel, setPendingDeleteNovel] = useState(false)
+  const [refreshing, setRefreshing] = useState(false)
 
   useEffect(() => {
     void loadNovel(novelId)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [novelId])
+
+  /**
+   * 手动刷新：清单和这本书都从远端重拉一次。
+   * 设置页里那个「从远端重新拉取」藏得太深，改完内容没生效时根本想不起来。
+   */
+  const doRefresh = async () => {
+    if (refreshing) return
+    setRefreshing(true)
+    try {
+      const [okIndex, okNovel] = await Promise.all([refresh(true), refreshNovel(novelId)])
+      if (okNovel) toast.success('已从云端拉取这本书的最新内容')
+      else if (okIndex) toast.info('清单已更新，但这本书没取到更新的内容')
+      else toast.info('没能从云端取到新数据，现在显示的是本机已有的内容')
+    } finally {
+      setRefreshing(false)
+    }
+  }
 
   const title = novel?.title ?? summary?.title ?? (loading ? '读取中…' : '未找到')
   const modules = novel?.modules ?? []
@@ -105,6 +125,19 @@ export function NovelPage() {
           </Link>
           <button className="btn" onClick={() => setNovelFormOpen(true)} disabled={!novel}>
             <UiIcon name="edit" size={16} /> 编辑信息
+          </button>
+          <button
+            className="btn btn-ghost"
+            onClick={() => void doRefresh()}
+            disabled={refreshing}
+            title="数据没更新？从 GitHub 重新拉一次"
+          >
+            <UiIcon
+              name={refreshing ? 'loader' : 'refresh'}
+              size={16}
+              className={refreshing ? 'spin' : undefined}
+            />
+            {refreshing ? '刷新中…' : '刷新'}
           </button>
         </div>
       </div>

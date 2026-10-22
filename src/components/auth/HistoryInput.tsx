@@ -47,21 +47,53 @@ export function HistoryInput({
   const [open, setOpen] = useState(false)
   const [active, setActive] = useState(0)
   const boxRef = useRef<HTMLDivElement>(null)
+  const listRef = useRef<HTMLDivElement>(null)
+  const lastNudge = useRef(0)
   const listId = useId()
 
   const hasOptions = suggestions.length > 0
   const showList = open && hasOptions
   const activeIndex = Math.min(active, Math.max(0, suggestions.length - 1))
 
-  // 点击外部收起
+  // 点外部收起。用 pointerdown 而不是 mousedown：手机（触摸）上同样会触发，
+  // 少一次「手机上点空白处收不起来」的差异
   useEffect(() => {
     if (!showList) return
-    const onDown = (e: MouseEvent) => {
+    const onDown = (e: PointerEvent) => {
       if (!boxRef.current?.contains(e.target as Node)) setOpen(false)
     }
-    document.addEventListener('mousedown', onDown)
-    return () => document.removeEventListener('mousedown', onDown)
+    document.addEventListener('pointerdown', onDown, true)
+    return () => document.removeEventListener('pointerdown', onDown, true)
   }, [showList])
+
+  /**
+   * 手机上输入框聚焦后会弹出软键盘，可视区矮掉一大截，
+   * 下拉又是绝对定位在输入框正下方的，很容易整块落在键盘背后 ——
+   * 用户看到的就是「点了没反应」。这里在列表贴到底部时把页面往上带一点。
+   */
+  useEffect(() => {
+    if (!showList) return
+    const nudge = () => {
+      const el = listRef.current
+      if (!el) return
+      const now = Date.now()
+      if (now - lastNudge.current < 500) return
+      const rect = el.getBoundingClientRect()
+      const viewBottom = window.visualViewport?.height ?? window.innerHeight
+      const overflow = rect.bottom - viewBottom + 12
+      if (overflow > 12) {
+        lastNudge.current = now
+        window.scrollBy({ top: overflow, behavior: 'smooth' })
+      }
+    }
+    const raf = requestAnimationFrame(nudge)
+    const vv = window.visualViewport
+    vv?.addEventListener('resize', nudge)
+    return () => {
+      cancelAnimationFrame(raf)
+      vv?.removeEventListener('resize', nudge)
+    }
+  }, [showList, suggestions.length])
 
   const pick = (s: LoginSuggestion) => {
     onPick(s)
@@ -130,8 +162,10 @@ export function HistoryInput({
           className="combo-toggle"
           tabIndex={-1}
           aria-label={showList ? '收起历史记录' : '展开历史记录'}
-          // 别让按钮抢走 input 的焦点，否则下拉刚开就因 blur 关掉
-          onMouseDown={(e) => e.preventDefault()}
+          // 鼠标按下时阻止默认，input 才不会先失焦；触摸不拦（拦了 iOS 可能吞掉 click）
+          onPointerDown={(e) => {
+            if (e.pointerType === 'mouse') e.preventDefault()
+          }}
           onClick={() => setOpen((v) => !v)}
         >
           <UiIcon name="chevronDown" size={14} />
@@ -139,7 +173,7 @@ export function HistoryInput({
       )}
 
       {showList && (
-        <div className="combo-pop" role="listbox" id={listId} aria-label="最近使用过的仓库">
+        <div className="combo-pop" role="listbox" id={listId} ref={listRef} aria-label="最近使用过的仓库">
           <div className="combo-head">最近登录</div>
           {suggestions.map((s, i) => (
             <div
@@ -148,7 +182,13 @@ export function HistoryInput({
               role="option"
               aria-selected={i === activeIndex}
               className={`combo-item${i === activeIndex ? ' is-active' : ''}`}
-              onMouseDown={(e) => e.preventDefault()}
+              // 只拦鼠标：触摸上 preventDefault 会连 click 一起吞掉，选中就永远不生效
+              onPointerDown={(e) => {
+                if (e.pointerType === 'mouse') {
+                  e.preventDefault()
+                  setActive(i)
+                }
+              }}
               onMouseEnter={() => setActive(i)}
               onClick={() => pick(s)}
             >
@@ -161,7 +201,9 @@ export function HistoryInput({
                   tabIndex={-1}
                   aria-label={`删除 ${s.label} 这条记录`}
                   title="从历史里删除"
-                  onMouseDown={(e) => e.preventDefault()}
+                  onPointerDown={(e) => {
+                    if (e.pointerType === 'mouse') e.preventDefault()
+                  }}
                   onClick={(e) => {
                     e.stopPropagation()
                     onRemove(s)

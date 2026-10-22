@@ -121,6 +121,46 @@
   box-shadow: 0 0 0 3px rgba(166, 59, 44, 0.08);
 }
 
+/* 「数据没更新？点这里刷新」—— 纸面上的一个小按钮，不抢书架的戏 */
+.shelf-refresh {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+  padding: 8px 13px;
+  border: 1px solid var(--rule);
+  border-radius: var(--r-pill);
+  background: var(--paper-card);
+  color: var(--ink-2);
+  font-family: inherit;
+  font-size: 12.5px;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease),
+    background var(--dur-fast) var(--ease);
+}
+.shelf-refresh:hover:not(:disabled) {
+  color: var(--ink);
+  border-color: var(--rule-strong);
+}
+.shelf-refresh:disabled {
+  opacity: 0.62;
+  cursor: default;
+}
+.shelf-refresh-short {
+  display: none;
+}
+@media (max-width: 560px) {
+  /* 手机上搜索框要占满一行，按钮缩成「刷新」，别把头部挤成三行 */
+  .shelf-refresh-long {
+    display: none;
+  }
+  .shelf-refresh-short {
+    display: inline;
+  }
+}
+
 /* ---------------- 书架网格 ---------------- */
 .shelf-grid {
   display: grid;

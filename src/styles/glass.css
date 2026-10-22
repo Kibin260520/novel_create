@@ -897,6 +897,14 @@
   .fielddef-row {
     grid-template-columns: 1fr 1fr;
   }
+  /* iOS Safari 聚焦字号 < 16px 的输入框会自动放大整个页面，
+     放大后布局错位、下拉也跟着跑偏，看起来就像「点不出来」。
+     16px 是它的阈值，正好不触发缩放。 */
+  .input,
+  .textarea,
+  .select {
+    font-size: 16px;
+  }
 }
 
 /* ---------------- 详情两栏 ---------------- */
@@ -1012,6 +1020,20 @@
   flex-wrap: wrap;
   font-size: 12.5px;
   color: var(--text-3);
+}
+/* 登录历史是「这台设备本地」的，说清楚省得换手机后以为功能坏了 */
+.auth-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin-top: calc(var(--sp-3) * -1);
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--text-3);
+}
+.auth-note svg {
+  flex: none;
+  margin-top: 2px;
 }
 .auth-foot a {
   display: inline-flex;
@@ -1237,6 +1259,8 @@ body.nc-dragging {
   left: 0;
   right: 0;
   max-height: 238px;
+  /* 手机横屏 / 键盘弹出时可视区很矮，238px 的下拉会顶出屏幕 */
+  max-height: min(238px, 46dvh);
   overflow-y: auto;
   padding: 4px;
   border-radius: var(--r-sm);
@@ -1313,4 +1337,16 @@ body.nc-dragging {
 .combo-del:hover {
   color: var(--danger);
   background: color-mix(in srgb, var(--danger) 12%, transparent);
+}
+
+/* 触摸设备没有 hover：删除按钮必须常显，否则手机上永远删不掉历史 */
+@media (hover: none) {
+  .combo-del {
+    opacity: 1;
+  }
+  /* 手指点选需要更大的落点 */
+  .combo-item {
+    padding: 10px 9px;
+    font-size: 14.5px;
+  }
 }

@@ -15,8 +15,17 @@ import type { Novel, NovelDraft } from '@/types/data'
  * 新增入口只保留网格末尾的「＋」，不再有顶部的紫色按钮。
  */
 export function HomePage() {
-  const { index, novels, loadingIndex, loadNovel, createNovel, updateNovel, deleteNovel } =
-    useData()
+  const {
+    index,
+    novels,
+    loadingIndex,
+    loadNovel,
+    createNovel,
+    updateNovel,
+    deleteNovel,
+    refresh,
+    syncing,
+  } = useData()
   const toast = useToast()
   const navigate = useNavigate()
 
@@ -24,6 +33,8 @@ export function HomePage() {
   const [formOpen, setFormOpen] = useState(false)
   const [editing, setEditing] = useState<Novel | null>(null)
   const [pendingDelete, setPendingDelete] = useState<Novel | null>(null)
+  const [refreshing, setRefreshing] = useState(false)
+  const busy = refreshing || syncing
 
   const list = index?.novels ?? []
 
@@ -80,6 +91,23 @@ export function HomePage() {
     setFormOpen(true)
   }
 
+  /**
+   * 从远端重新拉一次书架清单。
+   * 设置页里本来就有这个功能，但「数据没生效」的时候没人会想到去翻设置，
+   * 所以这里给一个随手可点的入口。
+   */
+  const doRefresh = async () => {
+    if (busy) return
+    setRefreshing(true)
+    try {
+      const ok = await refresh(true)
+      if (ok) toast.success('已同步：书架现在是仓库里的最新数据')
+      else toast.info('没能从云端取到更新的数据，先显示本机已有的内容')
+    } finally {
+      setRefreshing(false)
+    }
+  }
+
   const loading = loadingIndex && list.length === 0
 
   return (
@@ -109,6 +137,19 @@ export function HomePage() {
               />
             </div>
           )}
+          <button
+            type="button"
+            className="shelf-refresh"
+            onClick={() => void doRefresh()}
+            disabled={busy}
+            title="从 GitHub 重新拉取一次书架数据"
+          >
+            <UiIcon name={busy ? 'loader' : 'refresh'} size={14} className={busy ? 'spin' : undefined} />
+            <span className="shelf-refresh-long">
+              {busy ? '正在同步…' : '数据没更新？点这里刷新'}
+            </span>
+            <span className="shelf-refresh-short">{busy ? '同步中' : '刷新'}</span>
+          </button>
         </div>
       </div>
 
