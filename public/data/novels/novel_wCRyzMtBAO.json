@@ -9,7 +9,7 @@
   ],
   "summary": "",
   "createdAt": "2026-10-08T07:38:27.693Z",
-  "updatedAt": "2026-10-22T14:37:40.755Z",
+  "updatedAt": "2026-10-23T08:29:02.020Z",
   "modules": [
     {
       "id": "mod_4EsFz1keH6",
@@ -243,6 +243,17 @@
           "notes": "又一次遗憾。",
           "tags": [],
           "order": 4
+        },
+        {
+          "id": "ent_ZA2JeLwxTY",
+          "createdAt": "2026-10-23T08:29:02.020Z",
+          "updatedAt": "2026-10-23T08:29:02.020Z",
+          "values": {
+            "idea": "两个角色从同一起点出发。\n一人被众人簇拥，走向光明\n一人独自承受所有痛苦和孤寂，默默走向黑暗"
+          },
+          "notes": "",
+          "tags": [],
+          "order": 5
         }
       ],
       "order": 2
