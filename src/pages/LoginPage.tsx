@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { UiIcon } from '@/components/icons/UiIcon'
 import { HistoryInput, type LoginSuggestion } from '@/components/auth/HistoryInput'
+import { LoginBackdrop } from '@/components/auth/LoginBackdrop'
 import { useSettings, type AppSettings } from '@/store/SettingsContext'
 import { useToast } from '@/components/common/Toast'
 import {
@@ -47,6 +48,8 @@ export function LoginPage() {
       : preset
   })
   const [error, setError] = useState('')
+  /** 桌面端才挂动态背景；挂上后卡片要跟着变实一点 */
+  const [videoBg, setVideoBg] = useState(false)
 
   // 已登录（含刷新后仍在会话内）就直接放行
   useEffect(() => {
@@ -136,7 +139,9 @@ export function LoginPage() {
   }
 
   return (
-    <div className="auth-page">
+    <div className={`auth-page${videoBg ? ' has-video-bg' : ''}`}>
+      <LoginBackdrop onActiveChange={setVideoBg} />
+
       <form className="card glass auth-card" onSubmit={submit}>
         <div className="auth-head">
           <span className="auth-mark">
