@@ -9,7 +9,7 @@
   ],
   "summary": "",
   "createdAt": "2026-10-08T07:38:27.693Z",
-  "updatedAt": "2026-10-23T15:34:51.808Z",
+  "updatedAt": "2026-10-28T14:46:34.362Z",
   "modules": [
     {
       "id": "mod_4EsFz1keH6",
@@ -79,6 +79,17 @@
           "notes": "",
           "tags": [],
           "order": 1
+        },
+        {
+          "id": "ent_QksqtqymBH",
+          "createdAt": "2026-10-28T14:46:34.361Z",
+          "updatedAt": "2026-10-28T14:46:34.361Z",
+          "values": {
+            "name": "点亮9颗炎星，点亮12颗幻星"
+          },
+          "notes": "",
+          "tags": [],
+          "order": 2
         }
       ],
       "order": 0
