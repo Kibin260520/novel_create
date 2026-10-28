@@ -9,7 +9,7 @@
   ],
   "summary": "",
   "createdAt": "2026-10-08T07:38:27.693Z",
-  "updatedAt": "2026-10-28T14:46:34.362Z",
+  "updatedAt": "2026-10-28T14:48:20.391Z",
   "modules": [
     {
       "id": "mod_4EsFz1keH6",
@@ -71,10 +71,10 @@
         {
           "id": "ent_lOtodDM4b_",
           "createdAt": "2026-10-16T03:20:47.368Z",
-          "updatedAt": "2026-10-16T03:20:47.368Z",
+          "updatedAt": "2026-10-28T14:48:20.391Z",
           "values": {
             "name": "战法",
-            "detail": "无影战法，极光战法"
+            "detail": "无影战法，极光战法，彗星跑法"
           },
           "notes": "",
           "tags": [],
