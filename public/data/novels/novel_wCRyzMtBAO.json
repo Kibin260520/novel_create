@@ -9,7 +9,7 @@
   ],
   "summary": "",
   "createdAt": "2026-10-08T07:38:27.693Z",
-  "updatedAt": "2026-10-29T07:10:27.421Z",
+  "updatedAt": "2026-10-29T07:15:43.045Z",
   "modules": [
     {
       "id": "mod_4EsFz1keH6",
@@ -94,10 +94,10 @@
         {
           "id": "ent_FvA_YoSy_u",
           "createdAt": "2026-10-29T07:09:21.771Z",
-          "updatedAt": "2026-10-29T07:10:27.421Z",
+          "updatedAt": "2026-10-29T07:15:43.045Z",
           "values": {
             "name": "战域",
-            "detail": "领域展开。阵域？？"
+            "detail": "领域展开。阵域？？\n抛向天空，阵域降临or战域降临"
           },
           "notes": "",
           "tags": [],
