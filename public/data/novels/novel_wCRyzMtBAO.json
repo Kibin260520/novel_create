@@ -9,7 +9,7 @@
   ],
   "summary": "",
   "createdAt": "2026-10-08T07:38:27.693Z",
-  "updatedAt": "2026-10-28T14:48:20.391Z",
+  "updatedAt": "2026-10-29T07:09:21.772Z",
   "modules": [
     {
       "id": "mod_4EsFz1keH6",
@@ -90,6 +90,17 @@
           "notes": "",
           "tags": [],
           "order": 2
+        },
+        {
+          "id": "ent_FvA_YoSy_u",
+          "createdAt": "2026-10-29T07:09:21.771Z",
+          "updatedAt": "2026-10-29T07:09:21.771Z",
+          "values": {
+            "name": "战域"
+          },
+          "notes": "",
+          "tags": [],
+          "order": 3
         }
       ],
       "order": 0
