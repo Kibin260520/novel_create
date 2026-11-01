@@ -9,7 +9,7 @@
   ],
   "summary": "",
   "createdAt": "2026-10-08T07:38:27.693Z",
-  "updatedAt": "2026-11-01T07:05:22.068Z",
+  "updatedAt": "2026-11-01T13:39:11.993Z",
   "modules": [
     {
       "id": "mod_4EsFz1keH6",
@@ -299,6 +299,17 @@
           "notes": "",
           "tags": [],
           "order": 7
+        },
+        {
+          "id": "ent_wgF5vmAPRq",
+          "createdAt": "2026-11-01T13:39:11.992Z",
+          "updatedAt": "2026-11-01T13:39:11.992Z",
+          "values": {
+            "idea": "到最后，固执陪伴你左右，心里的理由，能让我抬起头"
+          },
+          "notes": "",
+          "tags": [],
+          "order": 8
         }
       ],
       "order": 2
